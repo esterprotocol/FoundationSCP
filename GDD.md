@@ -1,4 +1,4 @@
-# SCP: Site Director — GDD v2.1
+# SCP: Site Director — GDD v2.3
 
 Fonte única de verdade. O GDD v1.1 vira `docs/archive/GDD_v1.1.html`: banco de ideias, não de requisitos. Nada do v1.1 entra no jogo sem passar por uma entrada em `BACKLOG.md`. O backlog é mutável; as decisões abaixo podem ser revistas quando um teste em jogo mostrar problema. Mudança de regra de design entra no GDD e no backlog no mesmo commit.
 
@@ -60,29 +60,35 @@ Quando uma dependência falha, a UI mostra qual equipe ou objeto está faltando.
 - Funções previstas: Cozinheiro (F1), Distribuidor (F2), Zelador (reservada, sem agendamento).
 
 ## Áreas restritas
-Uma área restrita só é restrita de fato quando três camadas funcionam:
+Uma área restrita tem duas coisas separadas:
 
-1. **Permissão:** a zona tem `nivel_minimo`. A navegação só leva pessoas com nível suficiente. Classe-D (nível 0) nunca recebem rota para zona restrita.
-2. **Detecção:** entrada sem permissão gera **intrusão** somente se a zona tem cobertura de vigilância ativa (posto ou câmera). Sem cobertura, a entrada acontece sem registro.
-3. **Resposta:** a intrusão gera alerta para o setor responsável. Na F1 o alerta vai ao painel do diretor com estado "sem resposta". Na F3 a SD responde. Sem resposta, a intrusão continua aberta.
+- **Regra:** `nivel_minimo` da zona e as tarefas permitidas nela. Controla quem recebe tarefa, o que a interface oferece e quais pontos de controle existem.
+- **Proteção física:** o que de fato controla a passagem. Só a proteção impede alguém de atravessar.
+
+Marcar uma área como restrita não altera a rota. Uma área restrita só é restrita de fato quando quatro camadas funcionam:
+
+1. **Caminho:** a navegação considera paredes, portas e obstáculos físicos. Não considera cartão nem `nivel_minimo`. Uma pessoa sem permissão pode ser levada até a porta de uma zona restrita; é a porta que decide.
+2. **Proteção:** passagem controlada é uma porta fechada com leitor (`nivel_minimo`). Na F3 entram posto e guarda designado. Ao tentar atravessar, o leitor lê o cartão do inventário e libera ou nega na hora, com motivo e regra. A negação não altera a rota. `[A DEFINIR: porta trancada — quem tranca, quando, e se entra no custo da rota. Recomendação: não entra; a negação ocorre na passagem.]`
+3. **Entrada sem proteção:** porta aberta ou passagem sem leitor deixa qualquer pessoa atravessar. Não há negação. A entrada é um fato da simulação, com hora e localização.
+4. **Detecção e resposta:** entrada sem proteção gera alerta somente se a zona tem cobertura de vigilância ativa (posto ou câmera). Câmera detecta, não responde. Na F1 o alerta vai ao painel do diretor com estado "sem resposta". Na F3 a SD responde. Abordagem e incidente formal ficam fora de F1–F3.
 
 Estados mostrados na UI:
-- **Restrita de fato:** permissão, cobertura e resposta disponível.
-- **Restrita no papel:** falta cobertura ou resposta. A UI diz qual camada falta.
-- **Aberta:** sem permissão nenhuma.
+- **Restrita de fato:** proteção controla a passagem, com cobertura e resposta.
+- **Restrita no papel:** a regra existe, mas falta proteção, cobertura ou resposta. A UI diz qual camada falta.
+- **Aberta:** sem proteção.
 
-Como uma intrusão acontece: a navegação não leva Classe-D a zonas restritas. A brecha vem de porta deixada aberta por funcionário ou porta danificada. Forçar porta fica para depois da F3. Por isso portas precisam de estado aberto/fechado, registrado em F1-02.
+Como uma entrada sem proteção acontece na F1: porta deixada aberta por funcionário, ou porta sem leitor. Forçar porta fica para depois da F3. Nada fecha a porta sozinha na F1: ela permanece no estado em que foi deixada. `[A DEFINIR: porta fecha sozinha após a passagem?]` Por isso portas precisam de `estado` registrado em F1-02.
 
 Câmera é cobertura de detecção, não resposta. Mesma regra da F3-04 para observação.
 
-Nota: a forma como o Prison Architect trata áreas restritas não foi verificada nesta revisão. O modelo de três camadas é decisão deste GDD.
+Nota: o comportamento de áreas restritas no Prison Architect não foi verificado nesta revisão. Este modelo é decisão deste GDD.
 
 ## Equipes e status
 
 | Equipe / cargo | Fatia | Estado |
 |---|---|---|
 | ENG — Engenharia | F1 | Ativa. Obras e portas. |
-| Cozinheiro | F1 | Função do SG. Confirmado pelo diretor. |
+| Cozinheiro | F1 | Função do SG. Nome do cargo e escopo `[A DEFINIR: confirmar]`. |
 | SG — Serviços Gerais | F1 (cozinha), F2 (distribuição) | Departamento com filas por função: Cozinheiro, Distribuidor e, no futuro, Zelador. Limpeza fora de escopo até agendamento. |
 | SD — Segurança | F3 | Postos, observadores e portas. Não existe antes da F3. |
 | ScD — Científico | F3 | Propõe e registra a ficha e as observações do SCP-173. Não faz experimentos com pessoas. |
@@ -148,7 +154,7 @@ Departamentos além de Engenharia, Serviços Gerais e ScD · Segurança (SD) ant
 - Save em JSON versionado (`schema_version`), validado antes de substituir o estado.
 - Testes headless: `godot --headless -s tests/run.gd`. Runner próprio, sem addon.
 - IDs estáveis para toda entidade (pessoa, objeto, tarefa, reserva, cartão, alerta).
-- **Acesso por cartão:** item de inventário com `nivel` (0–5) e `id`. Porta tem `nivel_minimo`; pessoa sem cartão tem nível 0. A escala 0–5 é adaptação deste jogo, não regra da wiki. Verificação acontece de novo durante o trajeto. `[A DEFINIR: quem emite cartão além do diretor]`.
+- **Acesso por cartão:** item de inventário com `nivel` (0–5) e `id`. Porta tem `estado` (aberta, fechada) e `nivel_minimo`; pessoa sem cartão tem nível 0. A escala 0–5 é adaptação deste jogo, não regra da wiki. A verificação acontece na passagem pela porta, não no cálculo da rota. `[A DEFINIR: quem emite cartão além do diretor]`.
 - **Dados de conteúdo em `data/`:** objetos, zonas e cargos são definidos em arquivos de dados versionados, referenciados por ID.
 
 ## Regras de processo
@@ -159,6 +165,7 @@ Departamentos além de Engenharia, Serviços Gerais e ScD · Segurança (SD) ant
 - Histórias de aceitação de cada fatia ficam em `BACKLOG.md`.
 
 ## Histórico
+- **v2.3 (2026-10-08):** áreas restritas separam regra (tarefas, interface, pontos de controle) de proteção física (porta com leitor controla passagem). Caminho ignora permissão. Entrada sem proteção gera alerta só com cobertura. Cozinheiro sem confirmação marcado como `[A DEFINIR]`.
 - **v2.2 (2026-10-08):** Logística renomeada para Serviços Gerais (SG). Funções com filas próprias dentro do SG. Áreas restritas em três camadas (permissão, detecção, resposta). Limpeza adiada.
 - **v2.1 (2026-10-08):** cinco pilares; modelo mínimo de pessoas, alertas e políticas; dependências entre equipes; princípios e ficha mínima de anomalias; pesquisa limitada ao SCP-173; interface, fontes e riscos. Corrigido: SD só entra na F3.
 - **v2 (2026-10-08):** versão enxuta com três fatias verticais e decisões de cozinha e cartão.
