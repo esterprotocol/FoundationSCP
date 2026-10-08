@@ -17,7 +17,7 @@ O backlog é mutável: itens podem ser reescritos, divididos ou removidos quando
 ## F1 — Um Classe-D sobrevive
 Dependência: F0 completa.
 
-**Ordem de execução proposta:** F1-01 → F1-09 → F1-02 → F1-10 → F1-11 → F1-03 → F1-04 → F1-08 → F1-05 → F1-06 → F1-07.
+**Ordem de execução proposta:** F1-01 → F1-09 → F1-02 → F1-10 → F1-11 → F1-12 → F1-03 → F1-04 → F1-08 → F1-05 → F1-06 → F1-07.
 
 | ID | Objetivo | Regras / estados | Critério de pronto | Fora de escopo |
 |---|---|---|---|---|
@@ -28,9 +28,10 @@ Dependência: F0 completa.
 | F1-05 | Classe-D com fome e descanso | Necessidade cai por tick `[A DEFINIR: taxas]`. Fome só é suprida por bandeja retirada da janela no refeitório. Descanso é suprido por cama. Reserva impede uso duplo. | Teste: com cama e bandeja disponível, sobrevive N dias; sem um dos dois, alerta com causa aparece | Morte, saúde, higiene, medo de teste, consumo de ingrediente (F2) |
 | F1-06 | Painel de pessoa + alertas | Clique mostra estado, tarefa atual, destino, necessidades, impedimento, inventário (cartão e nível) e alertas ligados à pessoa. | Todo estado `bloqueado` exibe motivo em texto, com regra ou objeto responsável. Nenhuma informação depende só de cor ou som. | Histórico completo, relações |
 | F1-07 | Save/load cobre mapa, pessoas, tarefas, reservas, inventário, cartões e alertas | Salvar no meio de deslocamento, preparo e uso; carregar 2× sem duplicar nada | Teste automatizado + aceitação manual | |
-| F1-08 | Cozinheiro prepara lote provisório | Cozinheiro é cargo `[A DEFINIR: cargo da LOG, confirmar]`. Ele reserva bancada e fogão, executa o preparo e gera bandejas na janela. Preparo só conclui quando as bandejas existem. Lote é provisório: não consome ingrediente nesta fatia. Cozinheiro precisa de cartão nível 1 para entrar na cozinha. `[A DEFINIR: quantos lotes por dia]` | Bandeja só aparece após conclusão; cozinheiro sem cartão não inicia preparo e a UI mostra o motivo | Ingredientes, depósito, LOG, turnos |
+| F1-08 | Cozinheiro prepara lote provisório | Cozinheiro é cargo `[A DEFINIR: função de Cozinheiro do SG, confirmar]`. Ele reserva bancada e fogão, executa o preparo e gera bandejas na janela. Preparo só conclui quando as bandejas existem. Lote é provisório: não consome ingrediente nesta fatia. Cozinheiro precisa de cartão nível 1 para entrar na cozinha. `[A DEFINIR: quantos lotes por dia]` | Bandeja só aparece após conclusão; cozinheiro sem cartão não inicia preparo e a UI mostra o motivo | Ingredientes, depósito, Serviços Gerais, turnos |
 | F1-09 | Modelo de pessoa e inventário | Campos: `id`, `cargo`, `departamento`, `estado` (`disponível`, `em_tarefa`, `em_deslocamento`, `fadigada`, `folga`), `inventario`, `fome`, `descanso`. Transições de estado são registradas. Ferido e doente não existem nesta fatia. | Teste: pessoa em `folga` não recebe tarefa; pessoa `fadigada` recebe apenas tarefa de descanso; transição inválida é rejeitada | Saúde, experiência, treinamento, higiene |
 | F1-10 | Alertas mínimos com causa | Alerta: `natureza` (infraestrutura, rotina, anomalia, saúde), `gravidade` (rotina, atenção, emergência setorial), `localização`, `causa` (regra, objeto ou pessoa), `estado` (aberto/resolvido). Bloqueio de tarefa cria ou aponta alerta. Ao resolver a causa, alerta fecha e vai ao histórico. | Teste: bloqueio por falta de bandeja gera alerta com causa; restaurar a bandeja fecha o alerta; histórico preserva o registro | Confiança da informação (F3), alertas de anomalia |
+| F1-12 | Áreas restritas em duas camadas (permissão e intrusão) | Zona restrita tem `nivel_minimo`. Porta com estado aberto/fechado (registrado em F1-02). Pessoa sem permissão dentro de zona restrita gera **intrusão** se a zona tem cobertura de vigilância; na F1 a única cobertura é um posto marcado manualmente. Intrusão gera alerta no painel do diretor com estado "sem resposta" e permanece aberta até a pessoa sair ou ser retirada. UI mostra o estado da zona: restrita de fato, restrita no papel ou aberta, com a camada faltante. | Teste: (a) zona sem cobertura → entrada sem alerta e estado "restrita no papel"; (b) com posto → intrusão gera alerta com localização e causa (porta aberta); (c) porta fechada após saída → alerta continua aberto até resolução manual `[A DEFINIR: fecha sozinho?]` | Resposta da SD (F3), câmeras, forçar porta, cobertura por turno |
 | F1-11 | Conflito de políticas | Políticas têm escopo (Site, setor, departamento, operação). Quando duas regras se aplicam, a mais restritiva prevalece. Exceção manual tem duração e aparece no histórico. | Teste: duas regras conflitantes → a mais restritiva vale; exceção expira e a regra volta; UI mostra qual regra bloqueou | Editor visual de políticas, delegação a chefes |
 
 **Aceitação F1 (manual, 10–15 min):** construir alojamento, refeitório e cozinha → instalar cama, mesa, bancada, fogão e janela → emitir cartão nível 1 para um cozinheiro → cozinheiro prepara lote → bandeja aparece na janela → Classe-D pega a bandeja no refeitório e come → Classe-D sem cartão é bloqueado na porta da cozinha e a UI mostra o motivo e a regra → salvar durante deslocamento → carregar → provocar falta de bandeja, ler o alerta com causa → restaurar a bandeja e ver o alerta fechar.
@@ -39,14 +40,16 @@ Dependência: F0 completa.
 Dependência: F1 aceita. Itens detalhados só quando F1 fechar (evita especificar no escuro).
 
 - F2-01 Múltiplos Classe-D com reserva sem colisão.
-- F2-02 Ingredientes: pedido do jogador → recebimento na área de recebimento → transporte pela LOG ao depósito da cozinha → cozinheiro retira itens e consome **no preparo**, não no consumo. Reserva e consumo só na conclusão, sem duplicar em save/load.
-- F2-03 Equipe LOG (cargo ou departamento `[A DEFINIR]`): transporta recebimento → depósito e bandejas → janela de serviço. Prioridade: bandeja antes de ingrediente.
+- F2-02 Ingredientes: pedido do jogador → recebimento na área de recebimento → transporte pelo SG ao depósito da cozinha → cozinheiro retira itens e consome **no preparo**, não no consumo. Reserva e consumo só na conclusão, sem duplicar em save/load.
+- F2-03 Função Distribuidor do SG: transporta recebimento → depósito e bandejas → janela de serviço. Prioridade entre bandeja e ingrediente dentro da própria função: bandeja primeiro.
 - F2-04 Capacidade de zona visível e gargalo diagnosticável (ex.: bandeja atrasada porque nenhum transportador está livre).
 - F2-05 Horário de refeição único para Classe-D. Horário por equipe fica fora até existir conflito real de uso da cozinha.
 - F2-06 Rotina completa de Classe-D: chegada, registro, triagem, alojamento, refeições, descanso e convocação. Ordem fixa, com desvios gerando alerta.
 - F2-07 Necessidades ampliadas: higiene, medo de teste e descontentamento. Taxas `[A DEFINIR]`.
 - F2-08 Experiência por tipo de tarefa: aumenta com prática, reduz o tempo de execução e não gera promoção automática. Perda de pessoal retira experiência da equipe.
-- F2-09 Recebimento e depósito como zonas próprias, com capacidade e regra de acesso (LOG entra; Classe-D não entra).
+- F2-09 Recebimento e depósito como zonas próprias, com capacidade e regra de acesso (SG entra; Classe-D não entra). Regra de área restrita aplicada como em F1-12.
+- F2-10 Filas por função dentro do SG: cada tarefa exige uma função; pessoa exerce uma função; cozinheiro não recebe tarefa de limpeza nem de distribuição. Teste: tarefa de função X nunca é atribuída a pessoa de função Y.
+- F2-11 Realocação manual entre funções pelo diretor, com efeito mostrado na UI (fila de origem perde pessoa). Sem realocação automática.
 
 **Aceitação F2 (manual):** Classe-D cumpre a rotina do início ao fim → um ingrediente pedido chega, é transportado e vira refeição → gargalo de transporte aparece com causa na UI → salvar e carregar no meio do preparo sem duplicar material.
 
@@ -60,10 +63,18 @@ Dependência: F2 aceita. **Antes de qualquer código:** ficha operacional aprova
 - F3-05 Perda e recuperação de observação: ocorre só quando observadores válidos deixam de manter a observação. Gatilhos são fatos da simulação (ex.: observador ferido, fadigado ou ausente), nunca sorteio por tempo. Reproduzível em teste.
 - F3-06 Manutenção com observadores reservados. Revezamento coordenado pela rotina de SD.
 - F3-07 SD entra nesta fatia com postos, observadores e controle de portas.
+- F3-10 SD responde a intrusão: alerta de F1-12 passa a ter resposta, e a zona volta a "restrita de fato" somente com cobertura ativa. Intrusão sem resposta permanece como "restrita no papel".
+- F3-11 Cobertura por posto de SD: posto ocupado por observador válido cobre zona próxima. Câmera cobre detecção, não resposta.
 - F3-08 ScD propõe a ficha e registra observações. Relatório separa **observação**, **hipótese** e **conclusão sustentada**. Não faz experimentos com pessoas.
 - F3-09 Alerta de anomalia com confiança da informação (observado, hipótese).
 
 **Aceitação F3 (manual):** observação válida mantida por um turno inteiro → um observador é retirado e a UI mostra a perda com causa → recuperação com novo observador → relatório do ScD mostra o que foi observado e o que é hipótese.
+
+## Adiado: Limpeza (Serviços Gerais)
+Não agendado. Reservado para depois da F3, com estes pontos já previstos:
+- Função **Zelador** no SG, com fila própria (F2-10).
+- Tipo de zona "serviço" e "área comum" em F0-05, sem comportamento ainda.
+- Limpeza de celas, áreas pós-operação e contaminação fica fora. Essas partes pertencem a outros departamentos ou fases.
 
 ## Pós-F3 (congelado)
 Não há itens ativos. Ver `docs/archive/GDD_v1.1.html` para o banco de ideias: MED, AD, ISD, IA, RRT, facções, MTFs (13 especialidades), orçamento, pesquisa ampla, outros SCPs, multiplayer.
@@ -72,6 +83,7 @@ Não há itens ativos. Ver `docs/archive/GDD_v1.1.html` para o banco de ideias: 
 `ID · objetivo · regras · estados · interações · UI/feedback · critério de pronto testável · fora de escopo · dependência`
 
 ## Histórico
+- **v1.3 (2026-10-08):** LOG renomeada para Serviços Gerais (SG) em todos os itens; nota de histórico v1.1 preservada com o nome antigo. F1-12 (áreas restritas em duas camadas). F2-10 e F2-11 (filas por função, realocação manual). F3-10 e F3-11 (resposta da SD e cobertura). Limpeza registrada como adiada.
 - **v1.2 (2026-10-08):** adicionados F0-05, F1-09 a F1-11, F2-06 a F2-09 e F3-02 a F3-09. Ordem de execução da F1 explícita. Aceitação F2 e F3 definidas. SD movida para F3 (F3-07). Acessibilidade e fontes incluídas nos critérios.
 - **v1.1 (2026-10-08):** cozinha e refeitório substituem "distribuidor". Cozinheiro é cargo de pessoal. Ingredientes e transporte por LOG saem para F2. Acesso por cartão com `nivel_minimo` entra na F1. Horário de refeição por equipe adiado para F2.
 - **v1.0 (reset):** backlog inicial.

@@ -17,7 +17,7 @@ Planejar → construir → pessoas executam → observar gargalo → corrigir �
 
 ## Escopo (3 fatias verticais)
 - **F1 — Um Classe-D sobrevive:** construir alojamento, refeitório e cozinha; um cozinheiro prepara um lote provisório; a bandeja passa pela janela de serviço; um Classe-D come e dorme; cartão de acesso com nível mínimo em porta; alertas com causa; salvar/carregar.
-- **F2 — População e recursos:** vários Classe-D, ingredientes com pedido e transporte pela LOG, capacidade de zona, rotina completa de Classe-D, experiência de pessoal.
+- **F2 — População e recursos:** vários Classe-D, ingredientes com pedido e transporte pelo SG, capacidade de zona, rotina completa de Classe-D, experiência de pessoal.
 - **F3 — SCP-173 mínimo:** uma câmara, observadores reservados, observação válida, perda e recuperação de observação, relatório que separa observação de hipótese.
 
 ## Modelo de pessoas (mínimo para F1)
@@ -27,7 +27,7 @@ Cada pessoa tem `id` estável, `cargo`, `departamento`, `estado`, `inventario` e
 - **Necessidades F1:** fome e descanso. Higiene, medo de teste e descontentamento entram na F2.
 - **Inventário:** lista de itens. Na F1 contém o cartão de acesso. Mesma estrutura serve depois para ferramentas e ingredientes.
 - **Experiência:** por tipo de tarefa, com valor numérico `[A DEFINIR: escala]`. Aumenta com prática e não vira promoção automática. Entra na F2.
-- **Cargo x departamento:** departamento é uma unidade com fila de tarefas própria. Cargo é função dentro de um departamento. Um cargo não cria departamento novo sem uma fila de tarefas própria.
+- **Cargo x departamento:** departamento tem uma ou mais filas de tarefas, uma por função. Função é o que a pessoa executa. Uma função nova só entra quando suas tarefas não cabem em nenhuma função existente.
 
 ## Alertas (mínimo para F1)
 Alerta tem `natureza` (infraestrutura, rotina, anomalia, saúde), `gravidade` (rotina, atenção, emergência setorial), `localização`, `causa` (regra, objeto ou pessoa responsável) e `estado` (aberto, resolvido). Confiança da informação entra na F3, quando houver observação e hipótese.
@@ -46,18 +46,44 @@ Esta regra vale para cartão de acesso desde a F1.
 - Obra depende de engenheiro livre e de bancada, quando for o caso.
 - Cozinha depende de cartão nível 1 para o cozinheiro e de bancada e fogão acessíveis.
 - Refeição depende de bandeja na janela de serviço.
-- Ingrediente (F2) depende de recebimento, transporte pela LOG e depósito.
+- Ingrediente (F2) depende de recebimento, transporte pelo SG e depósito.
 - Observação do SCP-173 (F3) depende de observadores válidos e do revezamento que a SD organiza.
 
 Quando uma dependência falha, a UI mostra qual equipe ou objeto está faltando.
+
+## Serviços Gerais: funções e filas
+- SG é o departamento de serviços da instalação: cozinha e distribuição na F1–F2; limpeza no futuro.
+- Cada função tem **fila própria** dentro do SG. Cada pessoa exerce uma função. Cada tarefa exige uma função.
+- Cozinheiro não limpa. Zelador não prepara lote. Distribuidor não cozinha.
+- Prioridade vale só dentro da mesma função. Não existe prioridade automática entre funções.
+- Realocação entre funções é manual, decidida pelo diretor. A UI mostra o efeito: a fila de origem perde a pessoa.
+- Funções previstas: Cozinheiro (F1), Distribuidor (F2), Zelador (reservada, sem agendamento).
+
+## Áreas restritas
+Uma área restrita só é restrita de fato quando três camadas funcionam:
+
+1. **Permissão:** a zona tem `nivel_minimo`. A navegação só leva pessoas com nível suficiente. Classe-D (nível 0) nunca recebem rota para zona restrita.
+2. **Detecção:** entrada sem permissão gera **intrusão** somente se a zona tem cobertura de vigilância ativa (posto ou câmera). Sem cobertura, a entrada acontece sem registro.
+3. **Resposta:** a intrusão gera alerta para o setor responsável. Na F1 o alerta vai ao painel do diretor com estado "sem resposta". Na F3 a SD responde. Sem resposta, a intrusão continua aberta.
+
+Estados mostrados na UI:
+- **Restrita de fato:** permissão, cobertura e resposta disponível.
+- **Restrita no papel:** falta cobertura ou resposta. A UI diz qual camada falta.
+- **Aberta:** sem permissão nenhuma.
+
+Como uma intrusão acontece: a navegação não leva Classe-D a zonas restritas. A brecha vem de porta deixada aberta por funcionário ou porta danificada. Forçar porta fica para depois da F3. Por isso portas precisam de estado aberto/fechado, registrado em F1-02.
+
+Câmera é cobertura de detecção, não resposta. Mesma regra da F3-04 para observação.
+
+Nota: a forma como o Prison Architect trata áreas restritas não foi verificada nesta revisão. O modelo de três camadas é decisão deste GDD.
 
 ## Equipes e status
 
 | Equipe / cargo | Fatia | Estado |
 |---|---|---|
 | ENG — Engenharia | F1 | Ativa. Obras e portas. |
-| Cozinheiro | F1 | Cargo. Proposta: cargo da LOG `[A DEFINIR: confirmar]`. |
-| LOG — Logística e serviços | F2 | Transporte, depósito, bandejas. Cargo ou departamento `[A DEFINIR]`. |
+| Cozinheiro | F1 | Função do SG. Confirmado pelo diretor. |
+| SG — Serviços Gerais | F1 (cozinha), F2 (distribuição) | Departamento com filas por função: Cozinheiro, Distribuidor e, no futuro, Zelador. Limpeza fora de escopo até agendamento. |
 | SD — Segurança | F3 | Postos, observadores e portas. Não existe antes da F3. |
 | ScD — Científico | F3 | Propõe e registra a ficha e as observações do SCP-173. Não faz experimentos com pessoas. |
 | MED, AD, ISD, IA, RRT | Pós-F3 | Congeladas. Entram quando houver tarefa que as justifique. |
@@ -108,11 +134,12 @@ Fonte · forma física · necessidades · gatilhos · capacidades · percepção
 ## Premissas e riscos
 - **Escopo de hobby:** o maior risco é a lista crescer antes de a F1 ser jogável. Mitigação: a lista NÃO faremos é lida antes de cada item novo.
 - **Excesso de siglas:** siglas de equipe podem confundir. Mitigação: nome completo na primeira aparição em cada tela.
-- **Cargo x departamento:** sem essa distinção clara, cada equipe nova vira exceção. Mitigação: regra de "fila de tarefas própria".
+- **Cargo x departamento:** sem essa distinção clara, cada equipe nova vira exceção. Mitigação: uma fila por função, e função nova só com tarefas próprias.
+- **Área restrita no papel:** zona com permissão mas sem vigilância parece segura e não é. Mitigação: UI mostra a camada faltante em cada zona restrita.
 - **Números não testados:** taxas de necessidade, duração do dia e tamanhos de equipe são hipóteses. Mitigação: todos ficam `[A DEFINIR]` até o teste.
 
 ## NÃO faremos até F3 estar aceita
-Departamentos além de Engenharia, LOG e ScD · Segurança (SD) antes da F3 · MTFs · facções · RRT · MED · AD · ISD · IA · orçamento · pesquisa além do SCP-173 · energia · múltiplos andares · outros SCPs · computador do diretor como sistema separado · motins e fugas · saúde e ferimentos · permissões por setor ou horário · cartão copiado ou transferido · efeito de objetos de cozinha em revolta · horário de refeição por equipe · multiplayer.
+Departamentos além de Engenharia, Serviços Gerais e ScD · Segurança (SD) antes da F3 · MTFs · facções · RRT · MED · AD · ISD · IA · orçamento · pesquisa além do SCP-173 · energia · múltiplos andares · outros SCPs · computador do diretor como sistema separado · motins e fugas · saúde e ferimentos · permissões por setor ou horário · cartão copiado ou transferido · efeito de objetos de cozinha em revolta · horário de refeição por equipe · multiplayer.
 
 ## Decisões técnicas
 - Godot 4.6.3, GDScript, renderer Compatibility.
@@ -132,5 +159,6 @@ Departamentos além de Engenharia, LOG e ScD · Segurança (SD) antes da F3 · M
 - Histórias de aceitação de cada fatia ficam em `BACKLOG.md`.
 
 ## Histórico
+- **v2.2 (2026-10-08):** Logística renomeada para Serviços Gerais (SG). Funções com filas próprias dentro do SG. Áreas restritas em três camadas (permissão, detecção, resposta). Limpeza adiada.
 - **v2.1 (2026-10-08):** cinco pilares; modelo mínimo de pessoas, alertas e políticas; dependências entre equipes; princípios e ficha mínima de anomalias; pesquisa limitada ao SCP-173; interface, fontes e riscos. Corrigido: SD só entra na F3.
 - **v2 (2026-10-08):** versão enxuta com três fatias verticais e decisões de cozinha e cartão.
