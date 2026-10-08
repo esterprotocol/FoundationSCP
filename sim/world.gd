@@ -1,8 +1,9 @@
 class_name SimWorld
 extends RefCounted
-## Estado mínimo da simulação. Sem gameplay ainda: serve para provar relógio, RNG e save.
+## Estado da simulação. Relógio, RNG e checksum (F0) + grade (F1-01).
 ## Cada tick consome um valor do RNG e atualiza um checksum; dois mundos com a mesma seed
 ## e o mesmo número de ticks precisam terminar com o mesmo checksum.
+## A grade ainda não entra no save: isso é F1-07.
 
 const CHECKSUM_MOD := 1000000007
 
@@ -10,6 +11,7 @@ var seed_value: int
 var rng: SimRng
 var clock := SimClock.new()
 var checksum: int = 0
+var grid := SimGrid.new()
 
 
 func _init(p_seed: int = 1) -> void:

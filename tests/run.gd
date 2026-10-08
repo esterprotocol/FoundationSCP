@@ -6,6 +6,7 @@ const SUITES := [
 	preload("res://tests/test_clock.gd"),
 	preload("res://tests/test_world.gd"),
 	preload("res://tests/test_save.gd"),
+	preload("res://tests/test_grid.gd"),
 ]
 
 
