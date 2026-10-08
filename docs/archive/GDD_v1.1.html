@@ -1,0 +1,941 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SCP: Site Director — GDD v1.1</title>
+<style>
+:root{color-scheme:light;--bg:#eef1ed;--paper:#fffefa;--text:#202a27;--muted:#596660;--line:#d9e0d9;--accent:#21644f;--wash:#eaf2ed;--sidebar:#142b24;--sidebar-text:#e3eee7}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:32px}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.75 'Segoe UI',Arial,sans-serif}a{color:var(--accent);text-underline-offset:3px}button{font:inherit;cursor:pointer}aside{position:fixed;inset:0 auto 0 0;width:292px;background:var(--sidebar);color:var(--sidebar-text);display:flex;flex-direction:column;padding:30px 22px;z-index:2}.brand{font-size:11px;letter-spacing:2px;font-weight:700;color:#8fbeaa}.brand-title{font-size:24px;line-height:1.2;font-weight:750;margin:10px 0 8px}.small{font-size:12px;color:#a5b9ae}.tools{display:flex;gap:8px;margin:20px 0}.tools button{background:#26463a;color:#f1f6f2;border:1px solid #436253;padding:7px 12px;border-radius:6px;font-size:12px}.tools button:hover{background:#365e4e}nav{overflow-y:auto;scrollbar-width:thin;scrollbar-color:#608575 transparent;padding-right:5px}nav a{display:block;color:#c3d5ca;font-size:12px;line-height:1.45;padding:8px 10px;text-decoration:none;border-left:2px solid transparent}nav a:hover,nav a.active{background:#254638;color:#fff;border-left-color:#99d1af}main{margin-left:292px;padding:48px 52px 100px}.hero{max-width:1000px;margin:0 auto;background:var(--sidebar);color:#f5f7f3;padding:44px 48px;border-radius:14px 14px 0 0}.eyebrow{font:700 11px/1.4 'Segoe UI',sans-serif;letter-spacing:2px;color:#a3c8b4}.hero h1{font-size:42px;line-height:1.15;letter-spacing:-1px;margin:14px 0}.hero p{color:#d1e1d7;max-width:670px;margin:0;font-size:18px}.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:26px}.badge{font-size:11px;border:1px solid #5a7d69;border-radius:30px;padding:4px 11px;color:#dceade}article{max-width:1000px;margin:0 auto;background:var(--paper);padding:42px 48px 64px;box-shadow:0 10px 35px #213b2810;border:1px solid var(--line);border-top:0;border-radius:0 0 14px 14px}article>h1{display:none}h2{font-size:25px;line-height:1.3;letter-spacing:-.35px;margin:56px 0 20px;padding-top:24px;border-top:1px solid var(--line);scroll-margin-top:15px}h2:first-of-type{margin-top:0;padding-top:0;border-top:0;font-size:20px;color:var(--muted)}p{margin:14px 0}strong{font-weight:650}blockquote{border-left:4px solid var(--accent);margin:26px 0;padding:12px 22px;background:var(--wash);font-size:20px;line-height:1.6}blockquote p{margin:0}li{padding-left:3px;margin:8px 0}ol,ul{padding-left:24px}.table-wrap{overflow-x:auto;margin:24px 0;border:1px solid var(--line);border-radius:8px}table{width:100%;border-collapse:collapse;font-size:14px;line-height:1.6}th{text-align:left;background:var(--wash);font-size:12px;color:var(--accent);padding:13px 14px}td{padding:13px 14px;vertical-align:top;border-top:1px solid var(--line)}tr:nth-child(even) td{background:#eff2ec45}td:first-child{min-width:145px}article a{overflow-wrap:anywhere}.footer{max-width:1000px;margin:25px auto 0;display:flex;justify-content:space-between;gap:15px;font-size:12px;color:var(--muted)}.backtop{position:fixed;right:20px;bottom:20px;border:1px solid var(--line);border-radius:30px;padding:9px 17px;background:var(--paper);color:var(--accent);text-decoration:none;font-size:13px;box-shadow:0 3px 12px #0001}
+body.dark{color-scheme:dark;--bg:#101d17;--paper:#192a22;--text:#e1e9e2;--muted:#aabcb0;--line:#344a3d;--accent:#a6d8b8;--wash:#223e2e;--sidebar:#0b1912}body.dark tr:nth-child(even) td{background:#1c322655}
+@media(max-width:1100px){aside{width:240px;padding:25px 15px}main{margin-left:240px;padding:25px}.hero,article{padding:32px}h2{font-size:23px}.hero h1{font-size:36px}}
+@media(max-width:760px){aside{position:relative;width:auto;padding:24px}.brand-title{font-size:23px}nav{max-height:180px;display:grid;grid-template-columns:1fr 1fr;gap:0 12px}.tools{margin:14px 0}main{margin-left:0;padding:16px 12px 60px}.hero,article{padding:25px 20px}.hero h1{font-size:31px}.hero p{font-size:16px}body{font-size:15px}h2{font-size:22px}.table-wrap table{min-width:590px}blockquote{font-size:18px;padding:12px 16px}.footer{display:block}.backtop{right:12px;bottom:12px}}
+@media print{body,body.dark{--bg:white;--paper:white;--text:#111;--muted:#444;--line:#ccc;--accent:#174b36;--wash:#f0f4ef;background:white;color:#111}aside,.backtop{display:none}main{margin:0;padding:0}.hero{color:#111;background:white;border-bottom:3px solid #174b36;border-radius:0;padding:0 0 20px}.hero p,.eyebrow,.badge{color:#333}.badge{border-color:#bbb}article{padding:20px 0;box-shadow:none;border:0}h2{break-after:avoid}p,li{orphans:3;widows:3}tr{break-inside:avoid}.table-wrap{overflow:visible}a{color:inherit;text-decoration:none}.footer{font-size:10px}@page{margin:18mm}}
+</style></head>
+<body id="top"><aside><div class="brand">ARQUIVO DE DESENVOLVIMENTO</div><div class="brand-title">SCP: Site Director</div><div class="small">GDD v1.1 · 04 outubro 2026</div><div class="tools"><button id="theme" type="button">Mudar tema</button><button id="print" type="button">Imprimir</button></div><nav aria-label="Índice do documento"><a href="#sec-0">Documento de design do jogo — v1.1</a>
+<a href="#sec-1">1. Visão do jogo</a>
+<a href="#sec-2">2. Decisões fundamentais</a>
+<a href="#sec-3">3. Relação com a lore</a>
+<a href="#sec-4">4. Pilares de design</a>
+<a href="#sec-5">5. Iniciar e configurar uma partida</a>
+<a href="#sec-6">6. Ritmo e ciclo de jogo</a>
+<a href="#sec-7">7. Construção e infraestrutura</a>
+<a href="#sec-8">8. Funcionários e vida cotidiana</a>
+<a href="#sec-9">9. Departamentos e responsabilidades</a>
+<a href="#sec-10">10. Destacamentos MTF locais e reforços</a>
+<a href="#sec-11">11. Classe-D como população simulada</a>
+<a href="#sec-12">12. Anomalias como regras próprias</a>
+<a href="#sec-13">13. Pesquisa e avaliação de testes</a>
+<a href="#sec-14">14. Políticas, acessos e cadeia de comando</a>
+<a href="#sec-15">15. Alertas e resposta a incidentes</a>
+<a href="#sec-16">16. Inteligência e grupos de interesse</a>
+<a href="#sec-17">17. Orçamento, abastecimento e expansão</a>
+<a href="#sec-18">18. Computador do diretor e interface</a>
+<a href="#sec-19">19. Histórias que a simulação deve produzir</a>
+<a href="#sec-20">20. Economia de atenção e balanceamento</a>
+<a href="#sec-21">21. Arte, som e atmosfera</a>
+<a href="#sec-22">22. Visão completa e primeira versão jogável</a>
+<a href="#sec-23">23. Critérios de qualidade e verificação</a>
+<a href="#sec-24">24. Direção de implementação com apoio de IA</a>
+<a href="#sec-25">25. Decisões adotadas e registro de mudanças</a>
+<a href="#sec-26">26. Referências de criação</a></nav></aside>
+<main><header class="hero"><div class="eyebrow">SANDBOX DE CONSTRUÇÃO E GESTÃO</div><h1>Seu Site. Suas decisões.</h1><p>Uma instalação viva da Fundação SCP, construída e administrada do seu jeito.</p><div class="badges"><span class="badge">Solo e pessoal</span><span class="badge">Construção livre</span><span class="badge">Diretor do Site</span><span class="badge">Design · ainda não implementado</span></div></header><article><h1>SCP: Site Director</h1>
+<h2 id="sec-0">Documento de design do jogo — v1.1</h2>
+<p><strong>Data:</strong> 4 de outubro de 2026<br><strong>Finalidade:</strong> jogo pessoal, solo, para jogar por hobby<br><strong>Estado:</strong> design inicial completo; sistemas e números ainda não testados em jogo<br><strong>Nome:</strong> provisório, editável junto com o nome e o número do Site</p>
+<blockquote>
+<p>Construir uma instalação da Fundação SCP, definir como ela funciona e acompanhar as pessoas que tentam mantê-la operando. Cada corredor, contratação e protocolo deve fazer diferença na história da partida.</p>
+</blockquote>
+<p>Este GDD consolida as decisões da conversa e acrescenta propostas de design para torná-las jogáveis. Ele descreve a visão completa e uma sequência de desenvolvimento. A existência de uma funcionalidade neste documento não significa que ela já foi implementada. Valores numéricos são pontos de partida para testes, não balanceamento definitivo.</p>
+<h2 id="sec-1">1. Visão do jogo</h2>
+<p>Um sandbox de construção e gestão em visão superior 2D, inspirado na organização espacial e nas rotinas de Prison Architect, ambientado em uma interpretação própria da Fundação SCP. O jogador ocupa o cargo de diretor e administra um Site persistente por meio do mapa operacional e de um computador interno.</p>
+<p>O prazer principal está em projetar uma instalação, ver seus habitantes cumprindo tarefas, descobrir os gargalos e melhorar o funcionamento. Crises interrompem essa rotina e colocam o planejamento à prova. Recuperar uma ala, formar uma boa equipe ou concluir uma pesquisa deve ser tão satisfatório quanto sobreviver a uma ruptura de contenção.</p>
+<p>O Site pode combinar pesquisa, contenção, alojamento, medicina, logística e presença militar. Sua identidade surge das escolhas do jogador. <strong>Não existe uma seleção obrigatória de “tipo de Site” que bloqueie salas, departamentos, MTFs ou anomalias.</strong></p>
+<p>A referência de Prison Architect é a relação entre arquitetura, pessoal, necessidades e políticas, conforme a <a href="https://store.steampowered.com/app/233450/Prison_Architect/">descrição do jogo na Steam</a>. A variedade e a identidade das equipes têm como referência declarada pelo jogador o <a href="https://www.roblox.com/games/5041144419/SCP-Roleplay">SCP: Roleplay do Roblox</a>. O comportamento dessas equipes aqui é uma adaptação para administração solo.</p>
+<h2 id="sec-2">2. Decisões fundamentais</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Decisão</th>
+<th>Aplicação no jogo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Sandbox livre</td>
+<td>Toda partida pode mudar de direção; o jogador expande, reforma, transfere anomalias e reorganiza equipes.</td>
+</tr>
+<tr>
+<td>Diretor como papel principal</td>
+<td>Controle de setores, operações e políticas; funcionários executam o trabalho no mapa.</td>
+</tr>
+<tr>
+<td>Classe-D como pressão cotidiana central</td>
+<td>Alimentação, alojamento, escoltas, testes, conflitos, contrabando e tentativas de fuga sustentam a rotina.</td>
+</tr>
+<tr>
+<td>RRT para incidentes não anômalos</td>
+<td>Responde a motins, violência, reféns, invasões convencionais e sabotagem.</td>
+</tr>
+<tr>
+<td>MTFs locais especializadas</td>
+<td>Pequenos destacamentos mantidos no Site conforme as necessidades escolhidas pelo jogador.</td>
+</tr>
+<tr>
+<td>Reforço externo excepcional</td>
+<td>Recurso para crises graves, perda da capacidade local ou baixas que deixaram o Site vulnerável.</td>
+</tr>
+<tr>
+<td>Grupos externos com objetivos</td>
+<td>Espionagem, roubo, resgate, sabotagem, pressão e operações militares.</td>
+</tr>
+<tr>
+<td>Computador administrativo jogável</td>
+<td>Relatórios, testes, orçamento, pessoal, políticas e inteligência têm consequências reais.</td>
+</tr>
+<tr>
+<td>Uso pessoal</td>
+<td>O sucesso do projeto é o dono querer abrir o jogo novamente; não há metas comerciais.</td>
+</tr>
+</tbody></table></div>
+<p>O escopo inicial é uma instalação por partida. A Fundação ao redor existe por meio de transferências, mensagens, orçamento, operações e reforços. Controlar vários Sites simultaneamente é uma possibilidade distante.</p>
+<h2 id="sec-3">3. Relação com a lore</h2>
+<p>A wiki descreve uma rede de instalações que varia de pequenos postos a complexos muito grandes. Também apresenta diversas interpretações do universo, sem um cânone central obrigatório. Isso sustenta um Site original construído livremente. <a href="https://scp-wiki.wikidot.com/secure-facilities-locations">Foundation Facilities</a> · <a href="https://scp-wiki.wikidot.com/faq">FAQ</a></p>
+<p>O jogo adota uma continuidade própria. Preserva a missão de contenção, pesquisa e proteção, mas escolhe regras consistentes para que a simulação seja compreensível. <a href="https://scp-wiki.wikidot.com/about-the-scp-foundation">About the SCP Foundation</a></p>
+<p>Departamentos, duração dos turnos, comportamento dos Classe-D, requisitos de autorização e presença permanente de destacamentos são decisões deste jogo. Não devem ser apresentados como regras universais da wiki ou reproduções exatas do Roblox.</p>
+<p>Cada anomalia implementada recebe uma ficha com fonte, comportamento adotado e adaptações. Textos do console são escritos para a partida; os artigos completos permanecem como referências. O projeto usa arte própria ou provisória e mantém registro das fontes dos conteúdos SCP. Não há plano de publicação, venda ou distribuição.</p>
+<h2 id="sec-4">4. Pilares de design</h2>
+<ol>
+<li><strong>Liberdade de construir.</strong> A planta e a combinação de atividades pertencem ao jogador. Salas têm requisitos funcionais, mas podem assumir formatos diferentes.</li>
+<li><strong>Pessoas visíveis.</strong> Uma solicitação administrativa cria trabalho para pessoas reais da simulação, com deslocamento, equipamento, cansaço e riscos.</li>
+<li><strong>Problemas com causas.</strong> Falhas devem deixar pistas e permitir prevenção. Bons procedimentos precisam melhorar os resultados.</li>
+<li><strong>Departamentos úteis.</strong> Cada equipe resolve problemas próprios e depende de outras para trabalhar bem.</li>
+<li><strong>Crises recuperáveis.</strong> Perder uma ala ou uma equipe pode abrir uma fase de reconstrução. O jogador decide quando abandonar a instalação.</li>
+<li><strong>Mistério compreensível.</strong> Parte da informação pode ser desconhecida, mas a interface explica o que foi observado e o que ainda é hipótese.</li>
+</ol>
+<h2 id="sec-5">5. Iniciar e configurar uma partida</h2>
+<p>O jogador escolhe nome, número do Site, terreno, tamanho inicial, recursos, equipe e conteúdo disponível. Pode começar em um terreno vazio ou com um pequeno núcleo funcional. O núcleo é uma conveniência editável.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Configuração</th>
+<th>Comportamento</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Orçamento</td>
+<td>Limitado, generoso ou ilimitado.</td>
+</tr>
+<tr>
+<td>Construção</td>
+<td>Normal, acelerada ou instantânea.</td>
+</tr>
+<tr>
+<td>Pesquisa</td>
+<td>Progressão por descobertas ou protocolos conhecidos desde o início.</td>
+</tr>
+<tr>
+<td>Classe-D</td>
+<td>Ajuste da pressão de conflitos e fugas, preservando as necessidades básicas.</td>
+</tr>
+<tr>
+<td>Grupos externos</td>
+<td>Ativar cada grupo e ajustar sua atividade separadamente.</td>
+</tr>
+<tr>
+<td>Anomalias</td>
+<td>Selecionar o catálogo permitido e pedir transferências individualmente.</td>
+</tr>
+<tr>
+<td>Mortes e falhas</td>
+<td>Consequências normais ou regras mais leves para experimentar.</td>
+</tr>
+<tr>
+<td>Informação</td>
+<td>Visão completa ou informações limitadas aos sensores e relatórios.</td>
+</tr>
+<tr>
+<td>Recuperação</td>
+<td>Ajuda emergencial opcional, sem encerramento automático obrigatório.</td>
+</tr>
+</tbody></table></div>
+<p>As configurações podem ser alteradas durante a partida. A simulação permite pausar, salvar, carregar e experimentar sem punição por recarregar.</p>
+<p>Não existe vitória obrigatória. O jogador pode criar metas pessoais: manter uma instalação compacta, conter certo catálogo, operar sem baixas ou construir uma base enorme. Objetivos sugeridos pelo computador são opcionais.</p>
+<h2 id="sec-6">6. Ritmo e ciclo de jogo</h2>
+<p>Tempo contínuo com pausa e velocidades 1×, 2× e 4×. Uma proposta inicial é um dia de jogo durar cerca de 24 minutos reais em 1×; o teste de jogabilidade poderá mudar isso. Ordens, construção planejada e leitura de relatórios continuam disponíveis durante a pausa.</p>
+<p>O ciclo principal é:</p>
+<p><strong>Planejar → construir → contratar e equipar → organizar rotinas → pesquisar e operar → observar resultados → ajustar e expandir.</strong></p>
+<p>Na escala de minutos, o jogador acompanha filas, escoltas, testes e incidentes. Na escala de dias, muda turnos, treina equipes e amplia setores. No longo prazo, recebe novas anomalias, combina especialidades e estabelece relações com o mundo externo.</p>
+<p>O ritmo padrão privilegia períodos de funcionamento satisfatório. Problemas menores podem coexistir; crises grandes precisam de espaço para recuperação. O sistema não destrói uma contenção saudável apenas porque a partida ficou tranquila.</p>
+<h2 id="sec-7">7. Construção e infraestrutura</h2>
+<p>Mapa em grade com paredes, pisos, portas, objetos e áreas designadas. Ferramentas: arrastar paredes, pintar salas, copiar projetos, desfazer planejamento ainda não executado e visualizar custos antes de confirmar.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Área</th>
+<th>Exemplos de espaços</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Administração</td>
+<td>Escritório do diretor, RH, sala de reuniões, arquivo e central operacional.</td>
+</tr>
+<tr>
+<td>Classe-D</td>
+<td>Recepção, celas, dormitórios, refeitório, pátio, sanitários, triagem e sala de espera para testes.</td>
+</tr>
+<tr>
+<td>Pesquisa</td>
+<td>Laboratórios, observação, armazenamento de amostras e sala de preparação.</td>
+</tr>
+<tr>
+<td>Contenção</td>
+<td>Câmaras adaptadas a cada anomalia, antecâmaras, postos e barreiras especiais.</td>
+</tr>
+<tr>
+<td>Segurança</td>
+<td>Guaritas, checkpoints, sala de câmeras, armaria e alojamento de prontidão.</td>
+</tr>
+<tr>
+<td>Medicina</td>
+<td>Consultório, enfermaria, isolamento, recuperação e atendimento psicológico.</td>
+</tr>
+<tr>
+<td>Suporte</td>
+<td>Cozinha, depósitos, oficina, energia, resíduos e descanso dos funcionários.</td>
+</tr>
+<tr>
+<td>MTF</td>
+<td>Alojamento, treinamento, equipamento especializado, descontaminação e comando.</td>
+</tr>
+<tr>
+<td>Transporte</td>
+<td>Recebimento de cargas, portões e ponto de chegada de transferências e reforços.</td>
+</tr>
+</tbody></table></div>
+<p>Uma sala funciona por seus objetos, acesso e serviços. A interface mostra impedimentos concretos: “sem energia”, “sem rota autorizada”, “falta posto de observação”. Dimensões mínimas só existem quando necessárias para acomodar objetos e circulação.</p>
+<p>Energia, água e manutenção entram em camadas. Na primeira versão, energia é uma rede simples, água e saneamento são serviços abstratos. Sistemas detalhados de ventilação e filtragem entram quando houver ameaças que realmente os utilizem.</p>
+<p>Áreas têm circuitos, permissões, rotas e isolamento configuráveis. O jogador pode separar o fluxo de Classe-D, funcionários, suprimentos e anomalias. Construção perto de uma contenção ativa exige liberar o local ou aceitar uma operação com risco informado.</p>
+<p>Múltiplos andares são uma expansão posterior. O primeiro mapa precisa provar a circulação e a gestão em um único plano.</p>
+<h2 id="sec-8">8. Funcionários e vida cotidiana</h2>
+<p>Cada funcionário possui nome, departamento, função, especialidade, experiência, turno, saúde, fadiga, estresse e histórico. No início, a personalidade usa poucos traços que mudam decisões: cuidadoso, impulsivo, sociável, disciplinado ou resistente à pressão.</p>
+<p>O funcionário trabalha, busca equipamentos, descansa, se alimenta e responde a emergências. Contratar alguém não significa disponibilizá-lo durante todas as horas do dia. O quadro de pessoal distingue contratados, presentes, de folga, feridos e disponíveis para uma tarefa.</p>
+<p>Chefes distribuem trabalhos segundo prioridades definidas pelo diretor. O jogador pode acompanhar uma pessoa e ler seu histórico, mas a rotina deve funcionar sem ordens individuais constantes. Uma ordem manual pode priorizar um atendimento ou interromper um teste.</p>
+<p>Promoções dependem de experiência e treinamento. Um guarda não vira especialista em contaminação apenas porque ganhou uma patente. Mortes, afastamentos e transferências retiram experiência da equipe; a reposição exige tempo.</p>
+<p>O comportamento estranho de um funcionário pode resultar de cansaço, erro, conflito, influência anômala ou deslealdade. Suspeita não é prova automática de traição.</p>
+<h2 id="sec-9">9. Departamentos e responsabilidades</h2>
+<p>As atribuições abaixo são regras do jogo. A nomenclatura conserva a identidade desejada pelo jogador.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Equipe</th>
+<th>Trabalho cotidiano</th>
+<th>Papel em incidentes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>SD — Segurança</strong></td>
+<td>Patrulhas, controle de portas, escoltas, inspeções e custódia de Classe-D.</td>
+<td>Primeira resposta, isolamento, evacuação e acionamento da equipe adequada.</td>
+</tr>
+<tr>
+<td><strong>RRT — Resposta Rápida</strong></td>
+<td>Treinamento, prontidão e planejamento de resposta convencional.</td>
+<td>Motins, reféns, indivíduos armados, sabotagem e invasores não anômalos.</td>
+</tr>
+<tr>
+<td><strong>MTF — Destacamentos locais</strong></td>
+<td>Treinamento especializado, exercícios e preparação de operações de alto risco.</td>
+<td>Conter ou responder a ameaças compatíveis com a especialidade.</td>
+</tr>
+<tr>
+<td><strong>ScD / SCIE — Científico</strong></td>
+<td>Propõe testes, analisa dados e melhora procedimentos.</td>
+<td>Identifica o fenômeno e orienta a resposta técnica.</td>
+</tr>
+<tr>
+<td><strong>MED — Médico</strong></td>
+<td>Triagem, tratamento, recuperação e acompanhamento psicológico.</td>
+<td>Socorro, triagem de múltiplas vítimas e isolamento de expostos.</td>
+</tr>
+<tr>
+<td><strong>AD — Administração</strong></td>
+<td>Contratos, orçamento, pessoal, relatórios e autorizações delegadas.</td>
+<td>Coordena recursos, registra perdas e organiza recuperação.</td>
+</tr>
+<tr>
+<td><strong>ISD — Segurança Interna</strong></td>
+<td>Audita acessos e investiga desvios, corrupção e desaparecimentos.</td>
+<td>Preserva evidências, verifica credenciais e investiga sabotagem interna.</td>
+</tr>
+<tr>
+<td><strong>IA — Inteligência</strong></td>
+<td>Analisa ameaças externas e informações sobre grupos de interesse.</td>
+<td>Alerta sobre objetivos prováveis e acompanha operações externas.</td>
+</tr>
+<tr>
+<td><strong>ENG — Engenharia</strong></td>
+<td>Obras, equipamentos, portas e manutenção.</td>
+<td>Reparo emergencial e restabelecimento de serviços.</td>
+</tr>
+<tr>
+<td><strong>LOG — Logística e serviços</strong></td>
+<td>Estoques, cozinha, limpeza, transporte e entregas.</td>
+<td>Reabastecimento, remoção de obstáculos e apoio à recuperação.</td>
+</tr>
+</tbody></table></div>
+<p>A RRT pode proteger a rota de uma equipe MTF ou impedir que invasores alcancem uma ala. Sua missão continua sendo a segurança convencional; entrar em uma área anômala requer as condições e especialistas correspondentes.</p>
+<p>MED trata pessoas e coordena o atendimento. Beta-7, quando presente, cuida da operação especializada de contenção e descontaminação. IA acompanha o ambiente externo; ISD investiga o que ocorre dentro do Site. Esses limites tornam a composição da equipe importante.</p>
+<p>A administração ganha valor reduzindo a quantidade de solicitações simples que chegam ao diretor. Chefes trabalham com limites de gasto, prioridades e critérios de autorização definidos pelo jogador.</p>
+<h2 id="sec-10">10. Destacamentos MTF locais e reforços</h2>
+<p>O catálogo passa a prever <strong>13 especialidades MTF</strong>. A presença de cada uma depende da escolha do diretor e das condições que ele constrói. É possível misturar várias especialidades no mesmo Site, manter duas equipes da mesma unidade ou contratar uma pequena célula de apoio antes de estabelecer uma base maior.</p>
+<p>A tabela resume as especialidades de referência da <a href="https://scp-wiki.wikidot.com/task-forces">SCP Wiki — Mobile Task Forces</a>. Composição, infraestrutura, serviços e regras de comando descritos em seguida são adaptações deste jogo. Não representam uma organização universal da Fundação.</p>
+<h3>10.1. Catálogo de especialidades</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Unidade</th>
+<th>Especialidade de referência</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Epsilon-11</strong></td>
+<td>Crises de contenção em instalações.</td>
+</tr>
+<tr>
+<td><strong>Beta-7</strong></td>
+<td>Perigos biológicos, químicos e radiológicos.</td>
+</tr>
+<tr>
+<td><strong>Nu-7</strong></td>
+<td>Resposta militar de grande porte.</td>
+</tr>
+<tr>
+<td><strong>Epsilon-9</strong></td>
+<td>Operações em calor extremo.</td>
+</tr>
+<tr>
+<td><strong>Eta-10</strong></td>
+<td>Riscos anômalos visuais.</td>
+</tr>
+<tr>
+<td><strong>Eta-11</strong></td>
+<td>Ameaças auditivas e musicais.</td>
+</tr>
+<tr>
+<td><strong>Mu-4</strong></td>
+<td>Anomalias eletrônicas e de redes.</td>
+</tr>
+<tr>
+<td><strong>Zeta-9</strong></td>
+<td>Espaços confinados e geometrias anômalas.</td>
+</tr>
+<tr>
+<td><strong>Theta-4</strong></td>
+<td>Flora anômala.</td>
+</tr>
+<tr>
+<td><strong>Lambda-12 — Pest Control</strong></td>
+<td>Pragas anômalas.</td>
+</tr>
+<tr>
+<td><strong>Beta-1</strong></td>
+<td>Infiltração e vazamentos de informação.</td>
+</tr>
+<tr>
+<td><strong>Alpha-1</strong></td>
+<td>Operações sigilosas vinculadas ao Conselho O5.</td>
+</tr>
+<tr>
+<td><strong>Alpha-45</strong></td>
+<td>Limpeza e reparos após operações destrutivas.</td>
+</tr>
+</tbody></table></div>
+<p>O catálogo adota especificamente a interpretação “Pest Control” de Lambda-12. As unidades são identificadas também por uma descrição em português no menu para que o jogador escolha pela necessidade, mesmo sem memorizar todas as siglas.</p>
+<h3>10.2. O que cada escolha acrescenta à gestão</h3>
+<p>As funções abaixo são propostas de gameplay. Cada destacamento habilita serviços e procedimentos concretos que podem ser ligados, desligados ou priorizados pelo diretor.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Unidade</th>
+<th>Serviço proposto no Site</th>
+<th>Preparação e custo de oportunidade</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Epsilon-11</strong></td>
+<td>Preparar planos por câmara, ensaiar operações e assumir a recontenção compatível com seu treinamento.</td>
+<td>Reservar pessoal para exercícios reduz a prontidão imediata, mas melhora coordenação e revezamento.</td>
+</tr>
+<tr>
+<td><strong>Beta-7</strong></td>
+<td>Manter uma escala de resposta a exposição e certificar equipes antes de operações perigosas.</td>
+<td>O diretor precisa dividir recursos entre proteção, triagem e capacidade de descontaminação.</td>
+</tr>
+<tr>
+<td><strong>Nu-7</strong></td>
+<td>Manter uma reserva para ameaças que excedam a capacidade convencional local.</td>
+<td>O destacamento ocupa mais espaço e consome mais suprimentos; seu envio deixa a reserva reduzida.</td>
+</tr>
+<tr>
+<td><strong>Epsilon-9</strong></td>
+<td>Preparar rotas de entrada e retirada quando a temperatura impede o trabalho das equipes comuns.</td>
+<td>Equipamento exige inspeção e intervalos de recuperação; uma operação prolongada pode precisar de revezamento.</td>
+</tr>
+<tr>
+<td><strong>Eta-10</strong></td>
+<td>Definir quais imagens podem aparecer no console, revisar arquivos e preparar procedimentos de observação protegida.</td>
+<td>Filtrar imagens reduz exposição, mas pode diminuir a informação visual disponível para outras equipes.</td>
+</tr>
+<tr>
+<td><strong>Eta-11</strong></td>
+<td>Classificar gravações, controlar canais de áudio e organizar comunicação alternativa em áreas afetadas.</td>
+<td>Silenciar uma ala interfere nos avisos comuns; o diretor precisa providenciar sinalização e comunicação compatíveis.</td>
+</tr>
+<tr>
+<td><strong>Mu-4</strong></td>
+<td>Decidir quais sistemas devem permanecer isolados e acompanhar a recuperação de terminais comprometidos.</td>
+<td>Isolar a rede protege setores, mas suspende serviços digitais e pode exigir pessoal operando localmente.</td>
+</tr>
+<tr>
+<td><strong>Zeta-9</strong></td>
+<td>Planejar expedições limitadas para áreas cujo acesso ou retorno não é confiável.</td>
+<td>O jogador reserva uma equipe de apoio e decide quanto tempo e material comprometer em uma operação.</td>
+</tr>
+<tr>
+<td><strong>Theta-4</strong></td>
+<td>Programar inspeções e operações em áreas de cultivo ou crescimento fora do controle previsto.</td>
+<td>Amostras de pesquisa e limpeza competem pelo acesso à área; adiar uma operação pode ampliar o setor afetado.</td>
+</tr>
+<tr>
+<td><strong>Lambda-12</strong></td>
+<td>Distribuir inspeções, pontos de monitoramento e intervenções conforme sinais de infestação.</td>
+<td>Cobrir toda a instalação custa pessoal; concentrar cobertura pode deixar depósitos ou acessos pouco observados.</td>
+</tr>
+<tr>
+<td><strong>Beta-1</strong></td>
+<td>Abrir operações especiais a partir de evidências fornecidas por ISD e IA.</td>
+<td>A missão pode restringir temporariamente acessos e retirar suspeitos de tarefas, afetando a rotina do Site.</td>
+</tr>
+<tr>
+<td><strong>Alpha-1</strong></td>
+<td>Administrar uma presença de comando especial e tarefas reservadas previstas para a partida.</td>
+<td>Missões têm prioridade e recursos reservados; o jogador decide como acomodá-las sem paralisar a operação comum.</td>
+</tr>
+<tr>
+<td><strong>Alpha-45</strong></td>
+<td>Preparar uma sequência de recuperação e devolução de áreas ao serviço depois de operações grandes.</td>
+<td>O diretor escolhe entre recuperar depressa um setor essencial ou aproveitar a interdição para reformá-lo.</td>
+</tr>
+</tbody></table></div>
+<p>Proteções e métodos têm compatibilidade por anomalia. Óculos, filtros, isolamento de rede ou trajes não garantem imunidade universal. O relatório de preparação informa o que a equipe conhece, o que seu equipamento cobre e quais incertezas permanecem.</p>
+<h3>10.3. Limites entre equipes</h3>
+<p><strong>SD e RRT</strong> mantêm sua identidade: SD sustenta a segurança cotidiana; RRT responde à escalada não anômala. Um motim Classe-D continua sendo responsabilidade dessas equipes. A disponibilidade de uma MTF não transfere automaticamente a tarefa.</p>
+<p><strong>Nu-7</strong> pode apoiar uma defesa convencional quando a escala exige. No Site, o jogador recebe uma fração destacada da força, com capacidades limitadas ao pessoal e equipamento presentes. O nome da unidade não concede automaticamente veículos, aviação ou toda sua estrutura militar.</p>
+<p><strong>ISD, IA e Beta-1</strong> cooperam por encaminhamento: ISD acompanha a segurança interna, IA analisa contatos externos e Beta-1 conduz uma operação especializada autorizada quando a investigação justificar. Uma suspeita leve não mobiliza a unidade inteira.</p>
+<p><strong>ENG, LOG e Alpha-45</strong> atuam em momentos diferentes da recuperação. ENG e LOG mantêm os serviços cotidianos; Alpha-45 organiza a recuperação extraordinária. Uma área contaminada precisa ser liberada pelo especialista correspondente antes dos reparos comuns.</p>
+<p><strong>MED e Beta-7</strong> compartilham casos de exposição: MED acompanha pessoas; Beta-7 organiza a resposta especializada no ambiente. A indisponibilidade de um serviço continua sendo um problema mesmo se o outro estiver bem equipado.</p>
+<p><strong>Alpha-1</strong> preserva o vínculo com O5 na apresentação. No modo com regras institucionais, o diretor coordena uma missão vinculada ao Conselho, com mandato visível. No sandbox totalmente livre, o jogador pode manter o destacamento e definir suas prioridades por uma opção explícita de comando livre. Isso é uma liberdade da adaptação.</p>
+<h3>10.4. Formas de presença no Site</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Forma</th>
+<th>Funcionamento no sandbox</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Célula especializada</strong></td>
+<td>Dois integrantes como proposta inicial, voltados a análise, preparação e apoio. O painel deixa claro quando faltam pessoas para uma operação.</td>
+</tr>
+<tr>
+<td><strong>Destacamento local</strong></td>
+<td>Quatro integrantes como referência inicial, com alojamento, turno e prontidão próprios. Pode ser ampliado.</td>
+</tr>
+<tr>
+<td><strong>Seção local ampliada</strong></td>
+<td>Oito a doze integrantes, divididos entre turno, reserva, treinamento e recuperação. Não significa que todos estejam disponíveis ao mesmo tempo.</td>
+</tr>
+<tr>
+<td><strong>Missão temporária planejada</strong></td>
+<td>Equipe externa contratada antecipadamente para treinamento, transferência, inspeção ou operação delimitada.</td>
+</tr>
+<tr>
+<td><strong>Reforço emergencial externo</strong></td>
+<td>Equipe acionada quando a capacidade local é insuficiente, houve baixas importantes ou vários incidentes ultrapassam a prontidão do Site.</td>
+</tr>
+</tbody></table></div>
+<p>Os tamanhos são propostas de balanceamento. O diretor pode criar mais de um destacamento da mesma especialidade e nomeá-los, como “Epsilon-11 / Equipe Norte” e “Epsilon-11 / Equipe Reserva”. Esses nomes identificam grupos locais; não criam novas unidades na lore.</p>
+<p>A missão temporária é uma contratação planejada. O reforço emergencial continua excepcional. Um Site pequeno pode manter uma célula especializada e solicitar visitas programadas, enquanto um complexo maior sustenta várias equipes locais.</p>
+<h3>10.5. Composição, prontidão e ordens</h3>
+<p>Dentro de uma equipe, o jogador escolhe funções compatíveis: líder, operador de contenção, especialista técnico, socorrista e segurança de apoio. Cada operação mostra suas funções mínimas e permite acumular tarefas quando o treinamento suportar, com perda de velocidade ou capacidade indicada.</p>
+<p>O recrutamento considera qualificação. Um integrante pode aprender uma segunda competência, mas não dominar automaticamente todas as ameaças. Experiência na mesma anomalia melhora a preparação; fadiga, ferimentos e equipamento incompleto diminuem a prontidão.</p>
+<p>Rotinas disponíveis: inspeção especializada, exercício, apoio a teste de risco, escolta de transferência, análise de material, prontidão, operação ativa e recuperação. Manter todos trabalhando em inspeções reduz a reserva para emergências. A interface mostra esse efeito antes da ordem.</p>
+<p>Cada equipe conserva integrantes, histórico, equipamento e vínculos com operações anteriores. Em uma missão conjunta, o diretor define uma equipe responsável e objetivos de apoio. Não é necessário mover cada pessoa manualmente.</p>
+<p>Exemplo de operação conjunta criada para o jogo: um problema em um laboratório compromete imagens e controles. Mu-4 trabalha no sistema afetado, Eta-10 define a observação segura e Epsilon-11 executa a intervenção física prevista. RRT protege os acessos convencionais; MED prepara atendimento. A exigência desse conjunto depende do fenômeno implementado, não de uma combinação obrigatória para qualquer crise.</p>
+<h3>10.6. Reforços, baixas e retorno à operação</h3>
+<p>Reforços externos são solicitados quando há ameaça acima da capacidade local, múltiplos setores perdidos ou equipes essenciais indisponíveis. O pedido informa objetivo, especialidade, efetivo, equipamento, previsão de chegada e ponto de entrada. O jogador pode chamar antes da perda total se os indicadores já demonstrarem incapacidade de resposta.</p>
+<p>O reforço precisa chegar fisicamente e alcançar o objetivo. Comunicações e acesso influenciam o tempo de chegada. O atraso é informado. Depois da crise, a equipe parte, mantém uma missão temporária com prazo ou é incorporada por uma transferência autorizada separadamente.</p>
+<p>Reposição de baixas, recuperação de equipamento, missão temporária e reforço emergencial são pedidos distintos. Uma equipe com mortos ou feridos não reaparece completa no dia seguinte. O diretor pode reduzir operações, contratar substitutos, realocar pessoal qualificado ou usar apoio temporário durante a reconstrução.</p>
+<h3>10.7. Ordem de implementação do catálogo</h3>
+<p><strong>Epsilon-11, Beta-7 e Nu-7</strong> continuam na sequência já prevista. As demais entram conforme houver tarefas suficientes para justificar sua presença: Mu-4 com sistemas digitais anômalos; Eta-10/Eta-11 com exposição por informação; Epsilon-9 com calor; Zeta-9 com exploração; Theta-4/Lambda-12 com crescimento e infestação; Beta-1 com investigações complexas; Alpha-1 com missões de comando; Alpha-45 com recuperação avançada.</p>
+<p>Essa é uma ordem de desenvolvimento, não uma árvore obrigatória dentro da partida. Quando uma unidade e seus sistemas estiverem implementados, sua disponibilidade poderá ser configurada pelo jogador. O catálogo permanece aberto a novas especialidades, desde que cada uma acrescente trabalho e decisões próprios.</p>
+<h2 id="sec-11">11. Classe-D como população simulada</h2>
+<p>Classe-D é o maior foco de problemas cotidianos. Cada indivíduo tem saúde, fome, higiene, descanso, medo dos testes, descontentamento, relações e tendência a cooperar ou fugir. Histórico e traços ajudam a variar as pessoas; ninguém começa automaticamente como combatente suicida.</p>
+<p>A wiki permite interpretações diferentes sobre a gestão dessa população. Para esta partida, adotamos indivíduos persistentes, com transferências e consequências duradouras. <a href="https://scp-wiki.wikidot.com/security-clearance-levels">Security Clearance Levels</a></p>
+<p>Rotina proposta: chegada, registro, triagem, alojamento, refeições, descanso, atividades autorizadas e convocação para testes. Trabalhos de apoio opcionais geram rotina e benefícios, exigindo supervisão e avaliação de risco.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Situação</th>
+<th>Como surge</th>
+<th>Respostas possíveis</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Recusa de teste</td>
+<td>Medo, experiências anteriores, doença ou influência de outro Classe-D.</td>
+<td>Adiar, negociar benefício, avaliar a saúde, trocar o participante ou aplicar a política de custódia.</td>
+</tr>
+<tr>
+<td>Briga</td>
+<td>Conflitos pessoais, disputas e tensão acumulada.</td>
+<td>Separar envolvidos, tratar feridos e rever alojamento.</td>
+</tr>
+<tr>
+<td>Contrabando</td>
+<td>Acesso indevido, desvios de estoque ou participação de pessoal.</td>
+<td>Inspeções, revisão de fluxos e investigação.</td>
+</tr>
+<tr>
+<td>Fuga individual</td>
+<td>Intenção de escapar somada a uma oportunidade percebida.</td>
+<td>Escoltas, postos, permissões e resposta da SD.</td>
+</tr>
+<tr>
+<td>Motim</td>
+<td>Organização, tensão e capacidade de mobilização.</td>
+<td>Gestão preventiva, negociação e operação da RRT quando necessário.</td>
+</tr>
+<tr>
+<td>Reféns</td>
+<td>Um conflito evolui e há acesso a funcionários vulneráveis.</td>
+<td>Isolar, proteger outras áreas e conduzir resposta especializada.</td>
+</tr>
+<tr>
+<td>Contato externo</td>
+<td>Influência de um grupo alcança parte da população.</td>
+<td>IA identifica a ameaça; ISD investiga conexões; segurança protege o fluxo de informações.</td>
+</tr>
+</tbody></table></div>
+<p>As relações podem criar amizades, rivalidades, líderes e informantes. Uma população melhor atendida coopera mais, mas boas condições não eliminam todo interesse em escapar. Restrições excessivas e testes mal conduzidos têm custos sobre comportamento, saúde e pesquisa.</p>
+<p>Escalada sugerida: descontentamento observável → pequenas infrações → organização → preparação → incidente. Alguns casos individuais avançam rápido, mas as grandes crises deixam sinais detectáveis. A interface mostra causas conhecidas e tendências, sem revelar magicamente todos os planos.</p>
+<p>O objetivo da simulação é haver ferramentas úteis antes da violência. As regras de força, busca e contenção podem ser configuradas; seu impacto aparece em feridos, cooperação, confiança e disponibilidade para testes.</p>
+<h2 id="sec-12">12. Anomalias como regras próprias</h2>
+<p>Cada SCP tem um comportamento específico, condições de contenção, formas de pesquisa e procedimentos de resposta. O catálogo deve incluir objetos, fenômenos e entidades com utilidade ou comportamento pacífico, além dos perigosos.</p>
+<p>Safe, Euclid e Keter indicam dificuldade de contenção; não equivalem a uma escala simples de dano. O jogo mostra separadamente risco às pessoas, dificuldade operacional e alcance potencial do incidente. <a href="https://scp-wiki.wikidot.com/object-classes">Object Classes</a></p>
+<p>Uma ficha implementável contém: fonte; forma física; necessidades; gatilhos; capacidades; percepção; condições de contenção; testes disponíveis; observações conhecidas; procedimentos de recontenção; interações suportadas; adaptações feitas pelo jogo.</p>
+<p>Catálogo inicial proposto:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Conteúdo</th>
+<th>Mecânica central proposta</th>
+<th>Entrada no desenvolvimento</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>SCP-173</strong></td>
+<td>Observação direta coordenada, manutenção da câmara e recontenção. Câmeras servem à vigilância administrativa; não substituem observadores diretos nesta adaptação.</td>
+<td>Primeira fatia jogável.</td>
+</tr>
+<tr>
+<td><strong>SCP-914</strong></td>
+<td>Experimentos com objetos e configurações autorizadas, produzindo resultados de um catálogo definido. Testes biológicos começam proibidos.</td>
+<td>Expansão da pesquisa.</td>
+</tr>
+<tr>
+<td><strong>SCP-999</strong></td>
+<td>Cuidados, convivência e sessões supervisionadas com benefícios limitados de bem-estar.</td>
+<td>Expansão da vida cotidiana.</td>
+</tr>
+<tr>
+<td><strong>SCP-008</strong></td>
+<td>Controle de exposição, rastreio e quarentena, valorizando MED e Beta-7. A transmissão segue contatos compatíveis com a ficha; não se espalha pelo ar.</td>
+<td>Expansão biológica.</td>
+</tr>
+</tbody></table></div>
+<p>Referências dos comportamentos: <a href="https://scp-wiki.wikidot.com/scp-173">SCP-173</a>, <a href="https://scp-wiki.wikidot.com/scp-914">SCP-914</a>, <a href="https://scp-wiki.wikidot.com/scp-999">SCP-999</a> e <a href="https://scp-wiki.wikidot.com/scp-008">SCP-008</a>. Benefícios, tempos e exigências de interface são adaptações a testar.</p>
+<p>SCP-173 só perde observação quando os observadores válidos realmente deixam de mantê-la. A rotina deve coordenar revezamentos. Outros gatilhos também precisam resultar de fatos da simulação, e não de uma rolagem aleatória a cada minuto.</p>
+<p>Não haverá promessa de qualquer SCP interagir com qualquer outro. Interações cruzadas entram como conteúdo declarado e verificável. Novas anomalias devem acrescentar decisões diferentes, em vez de repetir a mesma fuga com números maiores.</p>
+<h2 id="sec-13">13. Pesquisa e avaliação de testes</h2>
+<p>Pesquisadores propõem operações com objetivo, participantes, materiais, duração estimada, requisitos e riscos conhecidos. O diretor pode aprovar, alterar condições, adiar, cancelar ou delegar aprovação dentro de regras.</p>
+<p>Sequência de uma operação:</p>
+<ol>
+<li>Selecionar a pergunta e o procedimento disponível.</li>
+<li>Reservar sala, pessoal, material e participante, se necessário.</li>
+<li>Verificar autorizações, saúde, escolta e condições de contenção.</li>
+<li>Preparar e deslocar a equipe.</li>
+<li>Executar etapas observáveis no mapa.</li>
+<li>Interromper se um critério configurado for atingido.</li>
+<li>Recolher participantes, equipamentos e registros.</li>
+<li>Analisar o resultado e apresentar um relatório.</li>
+</ol>
+<p>Testes com objetos ou observações passivas dispensam Classe-D quando o procedimento permitir. Usar pessoas sem necessidade aumenta custos e tensão sem garantir conhecimento.</p>
+<p>O relatório distingue <strong>observação</strong>, <strong>hipótese</strong> e <strong>conclusão sustentada</strong>. O jogador avalia a qualidade dos dados, aprova uma repetição ou transforma uma descoberta em protocolo. Resultados úteis podem reduzir tempo de trabalho, melhorar segurança ou abrir uma nova linha de investigação.</p>
+<p>Repetir um teste idêntico confirma resultados, mas deixa de produzir grandes recompensas. O avanço vem de perguntas novas, condições relevantes e aplicação das descobertas. Falhas também geram informações, desde que existam dados recuperáveis.</p>
+<h2 id="sec-14">14. Políticas, acessos e cadeia de comando</h2>
+<p>As políticas têm escopo: Site, setor, departamento ou operação. Uma regra local mais restritiva prevalece; exceções manuais possuem duração e aparecem no histórico. O editor de políticas mostra quais tarefas serão afetadas antes da alteração.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Política</th>
+<th>Efeito concreto</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Escolta mínima</td>
+<td>Define quantos agentes e quais qualificações uma operação precisa reservar.</td>
+</tr>
+<tr>
+<td>Acesso</td>
+<td>Combina identidade, autorização, setor e horário.</td>
+</tr>
+<tr>
+<td>Testes de risco</td>
+<td>Determina exigências de aprovação, equipe médica e plano de interrupção.</td>
+</tr>
+<tr>
+<td>Descanso</td>
+<td>Define turnos, horas extras e limite de fadiga para operações críticas.</td>
+</tr>
+<tr>
+<td>Classe-D</td>
+<td>Organiza rotina, atividades, inspeções e resposta a recusas.</td>
+</tr>
+<tr>
+<td>Emergência</td>
+<td>Define prioridades de portas, abrigo, evacuação e isolamento.</td>
+</tr>
+<tr>
+<td>Delegação</td>
+<td>Dá aos chefes limite de orçamento e critérios para autorizar tarefas.</td>
+</tr>
+</tbody></table></div>
+<p>Cargo, patente, classe de pessoal e acesso são campos distintos. Um agente pode ter autorização específica para uma câmara sem conhecer todos os projetos do Site, seguindo a ideia de compartimentação da wiki. <a href="https://scp-wiki.wikidot.com/security-clearance-levels">Security Clearance Levels</a></p>
+<p>Se uma tarefa ficar impossível por conflito de políticas, o jogo informa o bloqueio. Exemplo: “teste autorizado, aguardando segundo guarda; regra da ala exige dois”. Funcionários não ignoram o requisito silenciosamente.</p>
+<h2 id="sec-15">15. Alertas e resposta a incidentes</h2>
+<p>Um alerta possui <strong>natureza</strong>, <strong>gravidade</strong>, <strong>localização</strong>, <strong>confiança da informação</strong> e <strong>estado da resposta</strong>. As categorias incluem segurança convencional, anomalia, saúde e infraestrutura. Pode haver um motim em uma ala e uma contenção estável em outra.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Gravidade proposta</th>
+<th>Comportamento padrão</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Rotina</td>
+<td>Registro e acompanhamento pelo departamento responsável.</td>
+</tr>
+<tr>
+<td>Atenção</td>
+<td>Chefe verifica o problema e pode suspender tarefas locais.</td>
+</tr>
+<tr>
+<td>Emergência setorial</td>
+<td>Isolamento local, mobilização da equipe apropriada e interrupção de operações afetadas.</td>
+</tr>
+<tr>
+<td>Crise do Site</td>
+<td>Coordenação geral, prioridade de socorro, reavaliação das forças locais e pedido de apoio quando necessário.</td>
+</tr>
+</tbody></table></div>
+<p>O jogador personaliza respostas e nomes dos protocolos. Uma mudança de alerta não transforma todas as portas do Site em um mesmo estado. Corredores de socorro e evacuação precisam de regras próprias.</p>
+<p>SD assume a primeira resposta convencional; RRT trata a escalada não anômala; MTF local assume a operação especializada correspondente. A natureza do incidente pode mudar e transferir a responsabilidade. Médicos, técnicos e logística recebem tarefas de apoio.</p>
+<p>As ordens são objetivos: proteger setor, escoltar, resgatar, isolar, retomar, conter ou recuar. A equipe executa deslocamento e ações táticas simples. O jogador pode acompanhar e redirecionar unidades, mantendo o foco de diretor.</p>
+<p>Ferimentos, rendição e retirada fazem parte da simulação. Equipamento especializado supera força bruta quando o problema exige conhecimento. Munição comum não resolve automaticamente toda anomalia.</p>
+<h2 id="sec-16">16. Inteligência e grupos de interesse</h2>
+<p>O mundo externo mantém interesses no Site conforme suas anomalias, pesquisas, exposição e contatos. Há períodos sem atividade hostil. Os grupos têm recursos e objetivos próprios; perdas e operações frustradas afetam sua capacidade de agir.</p>
+<p>As inspirações da lore são: a oposição e sabotagem da Insurgência do Caos; a defesa de anomalias sencientes pela Mão da Serpente; a prioridade de neutralização de ameaças da GOC; os interesses comerciais de MC&amp;D; e a relação da Igreja do Deus Quebrado com artefatos mecânicos. Relações variam conforme a interpretação e o contexto. <a href="https://scp-wiki.wikidot.com/groups-of-interest">Groups of Interest</a></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Grupo</th>
+<th>Operações propostas para o jogo</th>
+<th>Resposta administrativa útil</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Insurgência do Caos</strong></td>
+<td>Roubo, sabotagem, apoio a fugas e assalto com um objetivo específico.</td>
+<td>Inteligência, custódia de informação, segurança interna e prontidão convencional.</td>
+</tr>
+<tr>
+<td><strong>Mão da Serpente</strong></td>
+<td>Tentativa de libertar uma entidade escolhida e contato com simpatizantes.</td>
+<td>Avaliar custódia, proteger o alvo, investigar sinais e considerar negociação.</td>
+</tr>
+<tr>
+<td><strong>GOC</strong></td>
+<td>Pressão ou operação para neutralizar uma ameaça que considera inaceitável. Também pode cooperar em uma crise.</td>
+<td>Demonstrar controle, trocar informações e negociar limites.</td>
+</tr>
+<tr>
+<td><strong>Marshall, Carter &amp; Dark</strong></td>
+<td>Suborno, chantagem e tentativas discretas de desvio de objetos.</td>
+<td>Auditoria de estoque, investigação e proteção de funcionários vulneráveis.</td>
+</tr>
+<tr>
+<td><strong>Igreja do Deus Quebrado</strong></td>
+<td>Contato ou operação vinculada a um artefato relevante para o grupo.</td>
+<td>Investigar o interesse e preparar custódia e negociação específicas.</td>
+</tr>
+</tbody></table></div>
+<p>Essas operações são adaptações autorais para o sandbox. Os grupos não recebem conhecimento automático da planta ou dos segredos do Site. IA e ISD coletam indícios; o diretor decide quanto investigar e quanto divulgar à equipe.</p>
+<p>A primeira facção implementada será a Insurgência. As outras entram quando seus métodos puderem ser diferentes de um simples ataque. O jogador pode desligar qualquer facção durante a partida.</p>
+<p>Uma operação externa passa por preparação, sinais detectáveis, execução e encerramento. Os envolvidos podem desistir ou recuar. Uma fuga de Classe-D não cria automaticamente novos insurgentes: é necessário um vínculo narrativo e sistêmico suportado pelo jogo.</p>
+<h2 id="sec-17">17. Orçamento, abastecimento e expansão</h2>
+<p>A Fundação fornece um orçamento-base para a instalação. Projetos opcionais justificam verbas extras e novos equipamentos. Conter bem e produzir conhecimento de qualidade sustenta a operação; provocar incidentes ou consumir Classe-D não gera recompensa automática.</p>
+<p>Despesas principais: construção, salários, alimentação, materiais de pesquisa, equipamento, manutenção e transporte. Estoques críticos são visíveis, com reserva mínima e pedido automático configurável. A primeira versão agrupa materiais comuns para evitar contabilidade excessiva.</p>
+<p>Receber uma anomalia é uma decisão do jogador. A oferta informa requisitos conhecidos, recursos associados e capacidade faltante. Ele pode aceitar, adiar ou recusar. Uma transferência não deve chegar sem espaço porque um objetivo obrigatório decidiu isso.</p>
+<p>O crescimento aumenta possibilidades e obrigações. Mais pessoas significam demanda por cozinha, descanso, medicina e supervisão. Mais anomalias significam diferentes competências e rotinas. Todos os caminhos permanecem acessíveis conforme o jogador adapta o Site.</p>
+<h2 id="sec-18">18. Computador do diretor e interface</h2>
+<p>O mapa operacional é a tela principal. O computador pode abrir sobre ele ou ocupar a tela inteira. A linguagem visual lembra um sistema interno de trabalho, com informação legível, filtros e atalhos; ações usuais usam botões e formulários.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Aplicativo interno</th>
+<th>Conteúdo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Visão geral</td>
+<td>Orçamento, ocupação, equipes presentes, alertas e tarefas bloqueadas.</td>
+</tr>
+<tr>
+<td>Pessoal</td>
+<td>Contratação, turnos, treinamento, promoção e histórico.</td>
+</tr>
+<tr>
+<td>Classe-D</td>
+<td>Saúde, rotina, custódia, relações e disponibilidade para operações.</td>
+</tr>
+<tr>
+<td>Contenção</td>
+<td>Estado de cada anomalia, requisitos e manutenção.</td>
+</tr>
+<tr>
+<td>Pesquisa</td>
+<td>Propostas, operações em andamento, resultados e procedimentos.</td>
+</tr>
+<tr>
+<td>Segurança</td>
+<td>Postos, patrulhas, acessos, RRT, destacamentos e prontidão.</td>
+</tr>
+<tr>
+<td>Inteligência</td>
+<td>Dossiês, indícios, investigações e solicitações externas.</td>
+</tr>
+<tr>
+<td>Políticas</td>
+<td>Regras, exceções, delegação e protocolos de alerta.</td>
+</tr>
+<tr>
+<td>Logística</td>
+<td>Estoques, manutenção, entregas e transferências.</td>
+</tr>
+<tr>
+<td>Arquivo</td>
+<td>Linha do tempo, incidentes, baixas e relatórios de recuperação.</td>
+</tr>
+</tbody></table></div>
+<p>Cada notificação oferece uma ação clara: localizar, inspecionar, atribuir equipe ou abrir decisão. Mensagens repetidas se agrupam. O jogador configura pausa automática para eventos graves.</p>
+<p>Camadas do mapa: acessos, energia, postos, cobertura de sensores, deslocamentos e risco conhecido. Ao clicar em alguém, a interface mostra sua tarefa, destino e impedimento atual.</p>
+<p>No modo de informação completa, o mapa revela a simulação para uma experiência confortável. No modo limitado, relata presença e eventos conforme observação e comunicação. A identidade de um infiltrado continua sendo informação investigativa enquanto a opção correspondente estiver ativa.</p>
+<h2 id="sec-19">19. Histórias que a simulação deve produzir</h2>
+<p><strong>Uma manhã que trava.</strong> A cozinha tem equipe insuficiente. A refeição atrasa, Classe-D chegam irritados à seleção, um teste perde seu horário e ocupa a escolta da operação seguinte. O diretor pode resolver o gargalo ou insistir, acumulando tensão. O relatório relaciona os atrasos à falta de capacidade.</p>
+<p><strong>Dois problemas, duas equipes.</strong> Um motim exige a RRT. Durante o mesmo período, uma tarefa mal preparada deixa uma contenção vulnerável. Epsilon-11 responde à ala anômala, enquanto SD mantém os corredores e MED organiza atendimento. A crise evidencia por que cada equipe tem uma função.</p>
+<p><strong>Uma expansão que muda o cotidiano.</strong> O jogador instala uma ala biológica e pede Beta-7. Surgem novas exigências de equipamento, triagem e circulação. Parte da capacidade da enfermaria passa a atender expostos. O Site continua livre para receber outras atividades.</p>
+<p><strong>A crise e o dia seguinte.</strong> Um ataque causa baixas no destacamento local. O diretor solicita reforço, suspende testes e segura os setores essenciais. Após a estabilização, trata feridos, investiga a origem, repõe pessoal e reconstrói. O mesmo save continua.</p>
+<p><strong>Um período que deu certo.</strong> Turnos, manutenção e políticas funcionam. O Site passa vários dias sem grande emergência. O jogador aproveita para observar funcionários conhecidos, reformar corredores e iniciar uma pesquisa. A simulação reconhece o bom funcionamento.</p>
+<h2 id="sec-20">20. Economia de atenção e balanceamento</h2>
+<p>O jogador deve gastar atenção principalmente com planejamento, decisões de risco e situações novas. Operações repetidas podem virar rotinas aprovadas. Supervisores cuidam de exceções pequenas dentro dos limites recebidos.</p>
+<p>Toda política deve ter consequências identificáveis. Mais vigilância consome pessoal e interfere no fluxo; reserva operacional custa recursos, mas reduz tempo de resposta; treinamento retira gente do turno e melhora operações futuras.</p>
+<p>Informações insuficientes são diferentes de decisões injustas. Um perigo desconhecido deixa pistas e pode ser investigado. Depois de um incidente, a análise mostra o que ocorreu, o que era observável e quais medidas poderiam reduzir o risco.</p>
+<p>O jogo não exige crises constantes para manter o interesse. Construção, pesquisa, relações e melhorias fornecem atividade durante períodos estáveis. Eventos aleatórios introduzem variação com condições e limites, sem anular protocolos funcionando corretamente.</p>
+<h2 id="sec-21">21. Arte, som e atmosfera</h2>
+<p>Visão superior 2D com personagens pequenos, silhuetas claras e uniformes diferenciados. O foco inicial é entender quem está fazendo o quê. Ícones e nomes complementam as cores dos departamentos.</p>
+<p>O ambiente mistura rotina institucional e estranheza: corredores funcionais, sinais de acesso, relatórios objetivos, ruídos de equipamento e fenômenos específicos. O horror surge das consequências e da incerteza. Violência visual pode ser reduzida nas configurações.</p>
+<p>Som informa sem saturar: chamada de rádio curta, porta recusando acesso, mudança de alerta e equipamento com defeito. Alarmes têm controle independente de volume e equivalentes visuais. Nada depende exclusivamente de som ou cor.</p>
+<p>A interface começa em português brasileiro, com siglas familiares preservadas. Escala de texto, velocidade, pausa automática e atalhos configuráveis fazem parte da experiência de jogar por hobby.</p>
+<h2 id="sec-22">22. Visão completa e primeira versão jogável</h2>
+<p>A visão completa inclui todos os departamentos, vários destacamentos, facções com métodos diferentes, pesquisas variadas e crescimento livre. Ela será construída em fatias jogáveis. O primeiro recorte deve conter a identidade do projeto: construção, pessoas, Classe-D, uma anomalia, RRT e MTF local.</p>
+<p><strong>Fatia jogável inicial proposta:</strong> mapa 64 × 64; cerca de 30–50 personagens ativos; 12 Classe-D no começo; salas essenciais; SD, ScD, MED, ENG, LOG; RRT pequena; destacamento Epsilon-11; SCP-173; operação de pesquisa estruturada; orçamento simples; alerta setorial; pedido de apoio externo em crise; salvar e carregar.</p>
+<p>AD começa representada pelo console e pelo diretor. IA e ISD recebem telas e atribuições completas quando a primeira facção externa e as investigações estiverem presentes. Beta-7 entra com o sistema biológico; Nu-7 entra com ameaças que justifiquem sua função. Nenhuma dessas etapas cria uma restrição permanente por tipo de Site.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Etapa</th>
+<th>Entrega jogável</th>
+<th>Critério de passagem</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>A — Rotina e construção</strong></td>
+<td>Salas, portas, tarefas, turnos, necessidades, SD e Classe-D.</td>
+<td>Uma rotina completa acontece e um problema de capacidade pode ser diagnosticado e corrigido.</td>
+</tr>
+<tr>
+<td><strong>B — Segurança convencional</strong></td>
+<td>Fuga, tensão, motim, RRT, socorro e resposta local.</td>
+<td>As condições da instalação alteram a frequência e o resultado dos incidentes.</td>
+</tr>
+<tr>
+<td><strong>C — Fundação SCP</strong></td>
+<td>SCP-173, teste, protocolo, Epsilon-11 local, recontenção e apoio externo.</td>
+<td>Uma operação funciona; uma falha controlada provoca resposta especializada e recuperação.</td>
+</tr>
+<tr>
+<td><strong>D — Site vivo</strong></td>
+<td>SCP-914/999, delegação AD, inteligência ISD/IA e primeira operação da Insurgência.</td>
+<td>Pesquisa e segurança interna produzem decisões diferentes das já existentes.</td>
+</tr>
+<tr>
+<td><strong>E — Especialização livre</strong></td>
+<td>SCP-008, Beta-7, Nu-7 e expansão de facções.</td>
+<td>Construir infraestrutura muda a capacidade do Site e permite novos riscos por escolha do jogador.</td>
+</tr>
+</tbody></table></div>
+<p>Ao final da etapa C existe a primeira versão de hobby com o ciclo essencial. As etapas seguintes ampliam variedade e profundidade. Conteúdo adicional só entra se a rotina já puder ser jogada sem intervenção constante do desenvolvedor.</p>
+<h2 id="sec-23">23. Critérios de qualidade e verificação</h2>
+<p>Os critérios abaixo orientam o desenvolvimento; ainda não foram executados.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Situação de verificação</th>
+<th>Resultado esperado</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Salvar durante uma escolta e carregar</td>
+<td>Pessoas, destino, custódia e reserva da operação são preservados.</td>
+</tr>
+<tr>
+<td>Porta fechada ou acesso revogado</td>
+<td>A tarefa encontra uma alternativa válida ou informa impedimento.</td>
+</tr>
+<tr>
+<td>Dois testes querem o mesmo participante</td>
+<td>Apenas um consegue reservá-lo; o outro aguarda ou seleciona alternativa válida.</td>
+</tr>
+<tr>
+<td>Início e fim de turno</td>
+<td>Postos revelam a cobertura real e tarefas críticas fazem passagem de responsabilidade.</td>
+</tr>
+<tr>
+<td>Motim convencional</td>
+<td>SD e RRT respondem conforme regras; MTF não abandona automaticamente sua função.</td>
+</tr>
+<tr>
+<td>Falha anômala</td>
+<td>O destacamento adequado recebe a tarefa; pessoal sem proteção respeita restrições.</td>
+</tr>
+<tr>
+<td>Baixas locais e pedido externo</td>
+<td>Reforço chega, atua e encerra sua missão; reposição permanente permanece distinta.</td>
+</tr>
+<tr>
+<td>Protocolo correto de SCP-173</td>
+<td>Observação válida impede movimento; perda real de observação habilita o comportamento definido.</td>
+</tr>
+<tr>
+<td>Boa rotina de Classe-D</td>
+<td>Menor tensão e maior cooperação, mantendo diferenças individuais.</td>
+</tr>
+<tr>
+<td>Facção externa sem acesso ao Site</td>
+<td>A operação depende do que o grupo sabe e dos recursos disponíveis.</td>
+</tr>
+<tr>
+<td>Recuperação pós-crise</td>
+<td>É possível estabilizar, reparar e continuar o mesmo Site.</td>
+</tr>
+</tbody></table></div>
+<p>Metas provisórias: interface fluida com o cenário inicial e simulação capaz de rodar em 4× sem perder eventos. O teto posterior de população será definido por medição no computador do jogador. Não há promessa de milhares de personagens.</p>
+<h2 id="sec-24">24. Direção de implementação com apoio de IA</h2>
+<p>O GDD orienta uma simulação local e independente de serviços online durante a partida. A IA auxilia no desenvolvimento de código, ferramentas e conteúdo. As decisões dos personagens usam regras da simulação, permitindo reproduzir erros e explicar resultados.</p>
+<p>Cada etapa é entregue como um jogo executável pequeno. O jogador constrói, observa e comenta o que foi divertido ou confuso. As próximas alterações respondem a essa experiência. A escolha de motor será feita antes da implementação, a partir de um teste simples de grade, personagens e interface.</p>
+<p>Base técnica desejada: tempo de simulação controlado; tarefas com reserva de recursos; navegação com acesso e perigos; eventos registrados; conteúdo configurável; saves versionados; separação entre estado do mundo e sua apresentação.</p>
+<p>Personagens não precisam recalcular tudo a cada quadro. Necessidades, decisões e navegação podem ter frequências diferentes. O mapa e as ordens devem continuar legíveis mesmo se a velocidade máxima precisar ser reduzida em instalações grandes.</p>
+<p>Para manter o hobby viável, o primeiro ciclo deixa para depois: controle em primeira pessoa, multiplayer, campanha mundial, veículos detalhados, vários andares, construção irrestrita de fenômenos sobrenaturais e interação universal entre todos os SCPs. O catálogo cresce conforme os sistemas se consolidam.</p>
+<h2 id="sec-25">25. Decisões adotadas e registro de mudanças</h2>
+<p>Esta versão já adota: sandbox livre; mapa 2D; console administrativo; tempo contínuo pausável; indivíduos persistentes; Classe-D como principal pressão cotidiana; RRT convencional; MTFs locais conforme necessidades; reforços externos para crises e perda de capacidade; facções com objetivos; continuidade após desastres; configurações editáveis durante a partida.</p>
+<p>As decisões criativas acrescentadas neste documento são propostas revisáveis: orçamento-base, catálogo inicial de quatro SCPs, operação por objetivos, informação completa como padrão, primeiro mapa 64 × 64 e desenvolvimento nas etapas A–E. Elas permitem começar sem exigir novas respostas antes de cada detalhe.</p>
+<p><strong>Histórico v1.0:</strong> consolida as correções sobre sandbox sem tipos fixos de Site; RRT para ocorrências não anômalas; destacamentos MTF locais; reforço externo excepcional; grupos hostis e Classe-D centrais. Acrescenta pesquisa operável, política com consequências, recuperação e critérios de entrega.</p>
+<p><strong>Histórico v1.1:</strong> amplia a seção 10 de três para treze especialidades MTF, com serviços próprios, composição, formas de presença, missões conjuntas e fronteiras de responsabilidade. Mantém seleção livre no sandbox e distingue missões temporárias planejadas de reforços emergenciais.</p>
+<h2 id="sec-26">26. Referências de criação</h2>
+<p>Consulta realizada em 4 de outubro de 2026. As fontes sustentam elementos do universo e referências de jogo; as regras de administração descritas são propostas autorais deste GDD.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Fonte</th>
+<th>Utilização</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://scp-wiki.wikidot.com/secure-facilities-locations">Foundation Facilities</a></td>
+<td>Amplitude de instalações e liberdade para criar uma instalação original.</td>
+</tr>
+<tr>
+<td><a href="https://scp-wiki.wikidot.com/faq">FAQ — SCP Wiki</a></td>
+<td>Ausência de um cânone central obrigatório.</td>
+</tr>
+<tr>
+<td><a href="https://scp-wiki.wikidot.com/about-the-scp-foundation">About the SCP Foundation</a></td>
+<td>Missão e contexto da organização.</td>
+</tr>
+<tr>
+<td><a href="https://scp-wiki.wikidot.com/object-classes">Object Classes</a></td>
+<td>Dificuldade de contenção separada de perigo imediato.</td>
+</tr>
+<tr>
+<td><a href="https://scp-wiki.wikidot.com/security-clearance-levels">Security Clearance Levels</a></td>
+<td>Compartimentação, classificações e interpretação de Classe-D.</td>
+</tr>
+<tr>
+<td><a href="https://scp-wiki.wikidot.com/task-forces">Mobile Task Forces</a></td>
+<td>Identidade das especialidades MTF.</td>
+</tr>
+<tr>
+<td><a href="https://scp-wiki.wikidot.com/groups-of-interest">Groups of Interest</a></td>
+<td>Interesses e diferenças entre organizações externas.</td>
+</tr>
+<tr>
+<td><a href="https://scp-wiki.wikidot.com/scp-173">SCP-173 — Moto42</a></td>
+<td>Observação direta e manutenção da contenção.</td>
+</tr>
+<tr>
+<td><a href="https://scp-wiki.wikidot.com/scp-914">SCP-914</a></td>
+<td>Experimentação controlada com objetos.</td>
+</tr>
+<tr>
+<td><a href="https://scp-wiki.wikidot.com/scp-999">SCP-999</a></td>
+<td>Convivência e comportamento benéfico.</td>
+</tr>
+<tr>
+<td><a href="https://scp-wiki.wikidot.com/scp-008">SCP-008</a></td>
+<td>Exposição biológica e quarentena.</td>
+</tr>
+<tr>
+<td><a href="https://store.steampowered.com/app/233450/Prison_Architect/">Prison Architect — Steam</a></td>
+<td>Construção e administração de uma instituição simulada.</td>
+</tr>
+<tr>
+<td><a href="https://www.roblox.com/games/5041144419/SCP-Roleplay">SCP: Roleplay — Roblox</a></td>
+<td>Referência do jogador para identidade e variedade das equipes.</td>
+</tr>
+</tbody></table></div>
+<p><strong>Próximo trabalho concreto:</strong> implementar a etapa A e observar um pequeno Site funcionando durante um ciclo completo. O GDD permanece como documento vivo, atualizado a partir do que o jogador realmente quiser continuar jogando.</p>
+</article><footer class="footer"><span>Documento vivo · propostas sujeitas a testes de jogabilidade</span><span>SCP: Site Director · v1.1</span></footer></main><a class="backtop" href="#top">Voltar ao início ↑</a>
+<script>
+document.getElementById('theme').addEventListener('click',()=>document.body.classList.toggle('dark'));
+document.getElementById('print').addEventListener('click',()=>window.print());
+const navlinks=Array.from(document.querySelectorAll('nav a'));
+const observer=new IntersectionObserver(entries=>{for(const entry of entries){if(entry.isIntersecting){navlinks.forEach(a=>a.classList.toggle('active',a.hash==='#'+entry.target.id));}}},{rootMargin:'0px 0px -70% 0px',threshold:0});
+document.querySelectorAll('article h2').forEach(h=>observer.observe(h));
+</script></body></html>
