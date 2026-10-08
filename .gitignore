@@ -1,0 +1,20 @@
+# Godot 4
+.godot/
+.import/
+*.translation
+
+# Exports
+export.cfg
+export_credentials.cfg
+/build/
+/exports/
+
+# Saves locais de teste
+*.sav
+/saves/
+
+# Editor / SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
