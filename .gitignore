@@ -3,6 +3,9 @@
 .import/
 *.translation
 
+# Caches locais de tools/godot.sh
+.tools/
+
 # Exports
 export.cfg
 export_credentials.cfg
